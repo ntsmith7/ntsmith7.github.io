@@ -1,5 +1,22 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Support
-    url: https://github.com/mmistakes/minimal-mistakes/discussions
-    about: Please post your support questions in the Discussions section.
+title: "Nick's Portfolio"
+description: "Showcasing my resume, write-ups, and projects."
+baseurl: "" # If hosted in a subdirectory, add the subdirectory path here
+url: "https://yourusername.github.io"
+
+author:
+  name: "Nick Smith"
+  avatar: "/assets/images/avatar.jpg"
+  bio: "Cybersecurity enthusiast and engineer specializing in secure solutions."
+  location: "Your City, Country"
+  email: nicktsmith7@gmail.com
+  links:
+    - label: "GitHub"
+      icon: "fab fa-github"
+      url: "https://github.com/yourusername"
+    - label: "LinkedIn"
+      icon: "fab fa-linkedin"
+      url: "https://linkedin.com/in/yourprofile"
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap

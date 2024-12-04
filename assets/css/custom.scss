@@ -1,0 +1,98 @@
+.header {
+    background-size: contain; /* Ensures the whole image fits inside */
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Adjust as needed */
+    width: 100%;
+  }
+  
+  img {
+    max-width: 100%; /* Ensure images scale properly */
+    height: auto; /* Maintain aspect ratio */
+  }
+
+  .resume-image:hover {
+    transform: scale(1.02); /* Slight zoom effect */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    transition: all 0.3s ease-in-out;
+  }
+  
+  @media (max-width: 768px) {
+    .resume-image {
+      max-width: 100%; /* Ensure the image adjusts for smaller screens */
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Slightly reduce shadow on mobile */
+    }
+  }
+
+  .resume-image {
+    height: 90vh; /* Take up 90% of the viewport height */
+    width: auto; /* Maintain aspect ratio */
+    margin: 0 auto;
+    display: block;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+  }
+  
+
+  .thumbnail img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .thumbnail img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .thumbnail p a {
+    font-size: 1.2rem;
+    color: #007acc; /* Adjust the color to match your theme */
+  }
+  
+  .thumbnail p a:hover {
+    text-decoration: underline;
+  }
+  
+  .thumbnails-row {
+    display: flex; /* Align items horizontally */
+    justify-content: center; /* Center items across the row */
+    align-items: flex-start; /* Align items to the top of their container */
+    gap: 40px; /* Add spacing between thumbnails */
+    flex-wrap: wrap; /* Wrap thumbnails to the next line on smaller screens */
+    margin-top: 40px;
+  }
+  
+  .thumbnail {
+    text-align: center;
+    width: 300px; /* Set a fixed width for thumbnails */
+  }
+  
+  .thumbnail img {
+    width: 100%; /* Ensure the image fits its container */
+    border-radius: 8px; /* Rounded corners for images */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow effect */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .thumbnail img:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+  }
+  
+  .thumbnail p a {
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: #007acc; /* Link color */
+  }
+  
+  .thumbnail p a:hover {
+    text-decoration: underline;
+  }
+  
+  /* For smaller screens, stack thumbnails vertically */
+  @media (max-width: 768px) {
+    .thumbnails-row {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+  

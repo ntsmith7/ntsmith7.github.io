@@ -11,8 +11,8 @@
 # https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/#installing-the-theme
 
 # theme                  : "minimal-mistakes-jekyll"
-# remote_theme           : "mmistakes/minimal-mistakes"
-minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+remote_theme             : "mmistakes/minimal-mistakes"
+minimal_mistakes_skin    : "air" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
 
 # Site Settings
 locale                   : "en-US"
@@ -22,7 +22,7 @@ title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Your Name"
 description              : "An amazing website."
-url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+url                      : "https://ntsmith7.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
@@ -255,6 +255,23 @@ pagination:
     before: 2
     after: 2
 
+#collections
+title: "Nick's Portfolio"
+description: "Showcasing my resume, write-ups, and projects."
+author:
+  name: "Nick Smith"
+  theme: "minimal-mistakes-jekyll"
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+collections:
+  writeups:
+    output: true
+    permalink: /write-ups/:title/
+  projects:
+    output: true
+    permalink: /projects/:title/
 
 # Plugins (previously gems:)
 plugins:
@@ -263,6 +280,7 @@ plugins:
   - jekyll-gist
   - jekyll-feed
   - jekyll-include-cache
+  - jekyll-remote-theme
 
 # mimic GitHub Pages with --safe
 whitelist:
@@ -323,3 +341,24 @@ defaults:
       comments: # true
       share: true
       related: true
+
+header:
+  overlay_image: /assets/images/portfolio-background.jpg
+  overlay_filter: 0.0 # Set to 0.0 for no overlay
+  overlay_color: "" # Leave empty for no color overlay
+  background_size: contain # Ensures the entire image fits without cropping
+  background_position: center # Centers the image horizontally
+  background_repeat: no-repeat # Ensures the image doesn't repeat
+
+feature_row:
+  - image_path: /assets/images/writeups-thumbnail.jpg
+    alt: "placeholder image 1"
+    title: "Placeholder 1"
+    excerpt: "This is some sample content that goes here with **Markdown** formatting."
+  - image_path: /assets/images/portfolio-background.jpg
+    alt: "placeholder image 2"
+    title: "Placeholder 2"
+    excerpt: "This is some sample content that goes here with **Markdown** formatting."
+    url: "#test-link"
+    btn_label: "Read More"
+    btn_class: "btn--inverse"
