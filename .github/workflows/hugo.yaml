@@ -4,16 +4,14 @@ name: Deploy Hugo Site to Pages
 on:
   push:
     branches:
-      - main  # Set a different branch name here if you aren't using 'main'
+      - main
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -28,27 +26,25 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.146.0
+
     steps:
-      - name: Install Hugo CLI
-        run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
-
-      - name: Install Dart Sass
-        run: sudo snap install dart-sass
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive # Fetch Hugo themes (true OR recursive)
+          submodules: recursive
           fetch-depth: 0
+
+      - name: Install Hugo Extended
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb \
+            https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb
+          sudo dpkg -i ${{ runner.temp }}/hugo.deb
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Build with Hugo
-        # --minify reduces file size for faster load times
-        run: hugo --minify
+        run: hugo --gc --minify
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -62,6 +58,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
