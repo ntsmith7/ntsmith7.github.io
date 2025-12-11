@@ -1,0 +1,22 @@
+{{ define "main" }}
+<header class="site-header">
+    <div class="identity-block">
+        <h1>Nicholas Smith</h1>
+        <span class="role">Software Engineer & Security Practitioner</span>
+    </div>
+    
+    <div class="bio-section">
+        {{ .Content }}
+    </div>
+</header>
+
+<main class="feed-section">
+    {{ $pages := where .Site.RegularPages "Type" "in" (slice "posts" "projects") }}
+    {{ range $pages }}
+        <a href="{{ .RelPermalink }}" class="feed-item">
+            <span class="feed-title">{{ .Title }}</span>
+            <p class="feed-summary">{{ .Summary | default .Description }}</p>
+        </a>
+    {{ end }}
+</main>
+{{ end }}

@@ -1,0 +1,26 @@
+{{ define "main" }}
+<nav style="margin-bottom: 3rem; padding-top: 1rem;">
+    <a href="/" style="font-family: var(--font-mono); font-size: 1rem; color: var(--accent); text-decoration: none;">
+        &larr; cd /home
+    </a>
+</nav>
+
+<article class="post">
+    <header class="site-header" style="margin-bottom: 3rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+        <h1 style="margin: 0 0 0.5rem 0;">{{ .Title }}</h1>
+        
+        <div class="post-meta" style="font-family: var(--font-mono); color: var(--text-dim); font-size: 0.9rem;">
+            <time>{{ .Date.Format "2006-01-02" }}</time>
+            {{ if .Params.tags }}
+            <span style="margin-left: 1rem;">
+                [ {{ delimit .Params.tags ", " }} ]
+            </span>
+            {{ end }}
+        </div>
+    </header>
+
+    <div class="post-content">
+        {{ .Content }}
+    </div>
+</article>
+{{ end }}

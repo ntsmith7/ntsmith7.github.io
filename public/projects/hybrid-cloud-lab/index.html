@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=53463&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid-Cloud Security Lab | Nicholas Smith</title>
+    
+    <link rel="stylesheet" href="/css/portfolio.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        
+<nav style="margin-bottom: 3rem; padding-top: 1rem;">
+    <a href="/" style="font-family: var(--font-mono); font-size: 1rem; color: var(--accent); text-decoration: none;">
+        &larr; cd /home
+    </a>
+</nav>
+
+<article class="post">
+    <header class="site-header" style="margin-bottom: 3rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+        <h1 style="margin: 0 0 0.5rem 0;">Hybrid-Cloud Security Lab</h1>
+        
+        <div class="post-meta" style="font-family: var(--font-mono); color: var(--text-dim); font-size: 0.9rem;">
+            <time>2025-11-15</time>
+            
+            <span style="margin-left: 1rem;">
+                [ Kubernetes, K3s, Juice Shop, Falco, Detection Engineering ]
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="post-content">
+        <h3 id="the-objective">The Objective</h3>
+<p>Standard penetration testing labs often lack the complexity of modern orchestration layers. I architected this environment to move beyond simple web-app exploitation and focus on the <strong>post-exploitation telemetry</strong> of containerized environments. The goal was to generate valid logs for lateral movement attempts between pods and verify if default Falco rulesets would catch a standard <code>privileged</code> container escape.</p>
+<h3 id="infrastructure-as-code">Infrastructure as Code</h3>
+<p>The lab runs on a 3-node K3s cluster managed via Ansible. I deployed OWASP Juice Shop using a custom Helm chart that deliberately weakens security contexts to allow for specific attack paths.</p>
+<p><strong>Cluster Configuration (<code>inventory.yml</code> snippet):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">k3s_cluster</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">children</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">server</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">hosts</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">master-01</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">ansible_host</span>: <span style="color:#ae81ff">192.168.20.10</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e"># Taint master to prevent workload scheduling</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">node_taints</span>: [<span style="color:#e6db74">&#34;CriticalAddonsOnly=true:NoExecute&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">agent</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">hosts</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">worker-01</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">ansible_host</span>: <span style="color:#ae81ff">192.168.20.11</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">worker-02</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">ansible_host</span>: <span style="color:#ae81ff">192.168.20.12</span>
+</span></span></code></pre></div>
+    </div>
+</article>
+
+        
+        <footer class="site-footer">
+            <div class="social-links">
+                <a href="https://github.com/ntsmith7" target="_blank">github</a>
+                <a href="https://www.linkedin.com/in/nicholastaylorsmith" target="_blank">linkedin</a>
+                <a href="mailto:smittydev33@gmail.com">email</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

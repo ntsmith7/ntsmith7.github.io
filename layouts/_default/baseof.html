@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=53463&amp;path=livereload" data-no-instant defer></script>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categories | Nicholas Smith</title>
+    <title>{{ .Title }} | Nicholas Smith</title>
     
-    <link rel="stylesheet" href="/css/portfolio.css">
+    <link rel="stylesheet" href="{{ "css/portfolio.css" | relURL }}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,18 +13,7 @@
 </head>
 <body>
     <div class="container">
-        
-  <article class="cf pa3 pa4-m pa4-l">
-    <div class="measure-wide-l center f4 lh-copy nested-copy-line-height nested-links mid-gray">
-      <p>Below you will find pages that utilize the taxonomy term “Categories”</p>
-    </div>
-  </article>
-  <div class="mw8 center">
-    <section class="flex-ns mt5 flex-wrap justify-around">
-      
-    </section>
-  </div>
-
+        {{ block "main" . }}{{ end }}
         
         <footer class="site-footer">
             <div class="social-links">
