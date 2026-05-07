@@ -1,43 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hybrid-Cloud Security Lab | Nicholas Smith</title>
-    
-    <link rel="stylesheet" href="/css/portfolio.css">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        
-<nav style="margin-bottom: 3rem; padding-top: 1rem;">
-    <a href="/" style="font-family: var(--font-mono); font-size: 1rem; color: var(--accent); text-decoration: none;">
-        &larr; cd /home
-    </a>
-</nav>
+{{/*
+  live-security-lab shortcode
+  Renders the architecture diagrams and a live SSE feed from the
+  enrichment service. Styling pulls from the site's CSS variables
+  so the widget matches the rest of the page automatically.
+*/}}
 
-<article class="post">
-    <header class="site-header" style="margin-bottom: 3rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
-        <h1 style="margin: 0 0 0.5rem 0;">Hybrid-Cloud Security Lab</h1>
-        
-        <div class="post-meta" style="font-family: var(--font-mono); color: var(--text-dim); font-size: 0.9rem;">
-            <time>2025-11-15</time>
-            
-            <span style="margin-left: 1rem;">
-                [ Kubernetes, K3s, Juice Shop, Falco, Detection Engineering ]
-            </span>
-            
-        </div>
-    </header>
-
-    <div class="post-content">
-        
-
-
+{{ $streamURL := "https://enrichment-service.kindbeach-f8ae683a.eastus2.azurecontainerapps.io/stream" }}
 
 <style>
 .lsl-section {
@@ -78,7 +46,7 @@
   text-align: center;
 }
 
- 
+/* SVG diagram theming */
 .lsl-svg-text { font-family: var(--font-mono); fill: var(--text-main); }
 .lsl-svg-text-dim { font-family: var(--font-mono); fill: var(--text-dim); font-size: 11px; }
 .lsl-svg-text-title { font-family: var(--font-mono); fill: var(--text-dim); font-size: 11px; letter-spacing: 0.05em; }
@@ -92,7 +60,7 @@
 .lsl-svg-block { stroke: #C04040; stroke-width: 1.2; stroke-dasharray: 4 4; fill: none; }
 .lsl-svg-edge-label { font-family: var(--font-mono); fill: var(--text-dim); font-size: 10px; }
 
- 
+/* Live feed */
 .lsl-feed-controls {
   display: flex;
   align-items: center;
@@ -222,41 +190,41 @@
         </marker>
       </defs>
 
-      
+      <!-- Local cluster zone -->
       <rect x="20" y="40" width="640" height="260" rx="12" class="lsl-svg-zone"/>
       <text x="36" y="62" class="lsl-svg-text-title">LOCAL KIND CLUSTER</text>
 
-      
+      <!-- Attacker -->
       <rect x="40" y="100" width="120" height="50" rx="6" class="lsl-svg-box-attacker"/>
       <text x="100" y="124" text-anchor="middle" class="lsl-svg-text" font-size="13">attacker</text>
       <text x="100" y="140" text-anchor="middle" class="lsl-svg-text-dim">curl, browser</text>
 
-      
+      <!-- Nginx -->
       <rect x="200" y="100" width="140" height="50" rx="6" class="lsl-svg-box"/>
       <text x="270" y="124" text-anchor="middle" class="lsl-svg-text" font-size="13">nginx</text>
       <text x="270" y="140" text-anchor="middle" class="lsl-svg-text-dim">logs request body</text>
 
-      
+      <!-- Juice-shop -->
       <rect x="380" y="100" width="140" height="50" rx="6" class="lsl-svg-box"/>
       <text x="450" y="124" text-anchor="middle" class="lsl-svg-text" font-size="13">juice-shop</text>
       <text x="450" y="140" text-anchor="middle" class="lsl-svg-text-dim">vulnerable app</text>
 
-      
+      <!-- Filebeat -->
       <rect x="40" y="210" width="120" height="50" rx="6" class="lsl-svg-box"/>
       <text x="100" y="234" text-anchor="middle" class="lsl-svg-text" font-size="13">filebeat</text>
       <text x="100" y="250" text-anchor="middle" class="lsl-svg-text-dim">tails logs</text>
 
-      
+      <!-- ES -->
       <rect x="200" y="210" width="140" height="50" rx="6" class="lsl-svg-box"/>
       <text x="270" y="234" text-anchor="middle" class="lsl-svg-text" font-size="13">elasticsearch</text>
       <text x="270" y="250" text-anchor="middle" class="lsl-svg-text-dim">indexes events</text>
 
-      
+      <!-- Exporter -->
       <rect x="380" y="210" width="140" height="50" rx="6" class="lsl-svg-box"/>
       <text x="450" y="234" text-anchor="middle" class="lsl-svg-text" font-size="13">exporter (go)</text>
       <text x="450" y="250" text-anchor="middle" class="lsl-svg-text-dim">polls + pushes</text>
 
-      
+      <!-- ACA zone -->
       <rect x="20" y="320" width="640" height="80" rx="12" class="lsl-svg-zone-public"/>
       <text x="36" y="342" class="lsl-svg-text-title" style="fill: var(--accent); fill-opacity: 0.7;">AZURE CONTAINER APPS — PUBLIC</text>
 
@@ -266,7 +234,7 @@
       <rect x="420" y="350" width="160" height="40" rx="6" class="lsl-svg-box-public"/>
       <text x="500" y="375" text-anchor="middle" class="lsl-svg-text" font-size="13">blog feed (you)</text>
 
-      
+      <!-- Arrows -->
       <line x1="160" y1="125" x2="200" y2="125" class="lsl-svg-arrow" marker-end="url(#lsl-arr-1)"/>
       <line x1="340" y1="125" x2="380" y2="125" class="lsl-svg-arrow" marker-end="url(#lsl-arr-1)"/>
       <path d="M 270 150 L 270 185 L 100 185 L 100 208" class="lsl-svg-arrow" marker-end="url(#lsl-arr-1)"/>
@@ -275,7 +243,7 @@
       <path d="M 450 260 L 450 305 L 280 305 L 280 348" class="lsl-svg-arrow-accent" marker-end="url(#lsl-arr-1)"/>
       <line x1="360" y1="370" x2="418" y2="370" class="lsl-svg-arrow-accent" marker-end="url(#lsl-arr-1)"/>
 
-      
+      <!-- Edge labels -->
       <text x="180" y="120" text-anchor="middle" class="lsl-svg-edge-label">http</text>
       <text x="360" y="120" text-anchor="middle" class="lsl-svg-edge-label">proxy_pass</text>
       <text x="180" y="230" text-anchor="middle" class="lsl-svg-edge-label">bulk</text>
@@ -299,7 +267,7 @@
         </marker>
       </defs>
 
-      
+      <!-- Private zone -->
       <rect x="20" y="40" width="320" height="280" rx="12" class="lsl-svg-zone"/>
       <text x="36" y="62" class="lsl-svg-text-title">PRIVATE — LOCAL CLUSTER</text>
 
@@ -319,7 +287,7 @@
       <text x="180" y="254" text-anchor="middle" class="lsl-svg-text" font-size="13">operator (you)</text>
       <text x="180" y="270" text-anchor="middle" class="lsl-svg-text-dim">port-forward to attack</text>
 
-      
+      <!-- Public zone -->
       <rect x="380" y="40" width="280" height="280" rx="12" class="lsl-svg-zone-public"/>
       <text x="396" y="62" class="lsl-svg-text-title" style="fill: var(--accent); fill-opacity: 0.7;">PUBLIC — AZURE</text>
 
@@ -331,15 +299,15 @@
       <text x="520" y="244" text-anchor="middle" class="lsl-svg-text" font-size="13">blog reader</text>
       <text x="520" y="260" text-anchor="middle" class="lsl-svg-text-dim">read-only sse</text>
 
-      
+      <!-- Allowed: exporter -> enrichment -->
       <path d="M 320 185 L 360 185 L 360 125 L 398 125" class="lsl-svg-arrow-accent" marker-end="url(#lsl-arr-2)"/>
       <text x="368" y="160" text-anchor="middle" class="lsl-svg-edge-label">push (token)</text>
 
-      
+      <!-- Allowed: enrichment -> reader -->
       <line x1="520" y1="150" x2="520" y2="218" class="lsl-svg-arrow-accent" marker-end="url(#lsl-arr-2)"/>
       <text x="555" y="190" class="lsl-svg-edge-label">/stream</text>
 
-      
+      <!-- Blocked: internet -> juice-shop -->
       <line x1="640" y1="320" x2="320" y2="115" class="lsl-svg-block" marker-end="url(#lsl-block)"/>
       <text x="430" y="335" text-anchor="middle" class="lsl-svg-edge-label" style="fill: #C04040;">no inbound to vulnerable app</text>
     </svg>
@@ -371,7 +339,7 @@
 
 <script>
 (function(){
-  const STREAM_URL = 'https:\/\/enrichment-service.kindbeach-f8ae683a.eastus2.azurecontainerapps.io\/stream';
+  const STREAM_URL = '{{ $streamURL | safeJS }}';
   const MAX_EVENTS = 50;
   const NOISE_RE = /\/socket\.io\/|\/healthz|\/favicon\.ico/;
 
@@ -472,21 +440,3 @@
   connect();
 })();
 </script>
-
-<h2 id="overview">Overview</h2>
-<p>This lab demonstrates…</p>
-
-    </div>
-</article>
-
-        
-        <footer class="site-footer">
-            <div class="social-links">
-                <a href="https://github.com/ntsmith7" target="_blank">github</a>
-                <a href="https://www.linkedin.com/in/nicholastaylorsmith" target="_blank">linkedin</a>
-                <a href="mailto:smittydev33@gmail.com">email</a>
-            </div>
-        </footer>
-    </div>
-</body>
-</html>
