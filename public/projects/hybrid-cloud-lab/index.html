@@ -3,7 +3,7 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hybrid-Cloud Security Lab | Nicholas Smith</title>
+    <title>A Live Detection Engineering Lab | Nicholas Smith</title>
     
     <link rel="stylesheet" href="/css/portfolio.css">
     
@@ -22,13 +22,13 @@
 
 <article class="post">
     <header class="site-header" style="margin-bottom: 3rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
-        <h1 style="margin: 0 0 0.5rem 0;">Hybrid-Cloud Security Lab</h1>
+        <h1 style="margin: 0 0 0.5rem 0;">A Live Detection Engineering Lab</h1>
         
         <div class="post-meta" style="font-family: var(--font-mono); color: var(--text-dim); font-size: 0.9rem;">
-            <time>2025-11-15</time>
+            <time>2026-05-07</time>
             
             <span style="margin-left: 1rem;">
-                [ Kubernetes, K3s, Juice Shop, Falco, Detection Engineering ]
+                [ Kubernetes, Detection Engineering, Elasticsearch, Go, OWASP Juice Shop, MITRE ATT&amp;CK ]
             </span>
             
         </div>
@@ -473,8 +473,44 @@
 })();
 </script>
 
-<h2 id="overview">Overview</h2>
-<p>This lab demonstrates…</p>
+<h2 id="why-i-built-this">Why I built this</h2>
+<p>I built this to learn detection engineering. The lab gives me somewhere to attack a real application, write detection rules against the resulting logs, and watch them fire or miss.</p>
+<p>The pipeline has the same shape as a production detection system. Logs are collected, normalized, matched against detection rules, and surfaced. A real one ingests millions of events per day from many source types, uses a mature rule engine such as Sigma or Elastic Detection Rules with backtesting and suppression, integrates with analyst workflows and alert lifecycle tooling, and has tiered storage and on-call coverage. This lab has one application, one log shape, a hardcoded set of regex rules I wrote in Go, and a live tail. The simplifications are intentional. Removing the production scaffolding makes the mechanics directly inspectable, which is what makes it useful for learning.</p>
+<p>The widget above is connected to the lab in real time. Each event in the feed started as an HTTP request to OWASP Juice Shop inside an isolated local cluster, was shipped through the log pipeline, and was classified by the detection layer. A <code>T1190</code> tag indicates the detection layer matched a SQL injection pattern in a request that just happened.</p>
+<h2 id="design-constraints">Design constraints</h2>
+<p>The lab needed to satisfy three constraints simultaneously.</p>
+<p>It had to use real telemetry. Synthetic logs do not teach the patterns that show up in real traffic, including the noise. The lab needed a real application generating its own logs from real HTTP requests, so that detection rules would match against payloads with the same shape as production data.</p>
+<p>It had to be isolated. A deliberately vulnerable application has known exploitable paths and should not be reachable from the public internet under any circumstances. The lab itself had to remain inside an environment that could not receive inbound traffic from outside.</p>
+<p>It had to be observable to a remote reader. The public visibility goal required that the live state of the lab be available to anyone reading this page, in real time, without exposing the lab itself.</p>
+<p>These three constraints are mutually satisfiable only if the data path is one-directional.</p>
+<h2 id="architecture">Architecture</h2>
+<p>OWASP Juice Shop runs in a local Kubernetes cluster behind an Nginx reverse proxy. The proxy exists to log request bodies and query strings in a format the detection layer can match against; Juice Shop&rsquo;s own application logs do not include the raw HTTP payloads. Filebeat tails the container logs and ships them to an Elasticsearch instance running in the same cluster. None of these components have ingress from outside the local environment.</p>
+<p>Outbound connectivity to the public internet is handled by a Go service that polls Elasticsearch using <code>search_after</code> cursors, batches new documents, and pushes them to a separate enrichment service running in Azure Container Apps. The push is one-way and authenticated with a shared token. The exporter has no inbound listener, and the enrichment service has no path back into the cluster.</p>
+<p>The enrichment service performs two functions. It tags each event against a set of MITRE ATT&amp;CK regex rules (<code>union select</code> matches T1190, <code>&lt;script</code> matches T1059.007), and it broadcasts tagged events to clients connected to its <code>/stream</code> endpoint over Server-Sent Events. The endpoint is read-only.</p>
+<p>This produces a one-directional data path. Events flow outward from the cluster, through the exporter, through the enrichment service, and to any reader. No path exists in the reverse direction.</p>
+<h2 id="tooling-choices">Tooling choices</h2>
+<p>A few of the components had real alternatives. The choices worth justifying:</p>
+<p><strong>Local Kubernetes runtime: kind.</strong> The local cluster could have run on minikube, k3d, k3s, or Docker Desktop&rsquo;s built-in Kubernetes. kind was chosen because it is the lightest of these on macOS, runs directly on the Docker daemon already needed for image builds, and tears down to zero state with a single command. That last point mattered during the build phase, when reproducing a clean state quickly was useful.</p>
+<p><strong>Vulnerable application: OWASP Juice Shop.</strong> DVWA and WebGoat are the other obvious candidates. Juice Shop was selected for its active maintenance, its varied attack surface across REST endpoints and a JavaScript SPA, and the more realistic traffic patterns the SPA generates from background requests.</p>
+<p><strong>Log pipeline: Filebeat and Elasticsearch.</strong> Loki with Promtail or Vector with ClickHouse would also have worked. Filebeat plus Elasticsearch was chosen because it is the same combination many production detection systems are built on, so the operational and query knowledge transfers. Elasticsearch&rsquo;s search-first model also makes ad-hoc rule iteration faster than a logs-as-metrics system would.</p>
+<p><strong>Detection layer: a custom Go service rather than an off-the-shelf rule engine.</strong> Sigma, Elastic Detection Rules, and the Logstash pipeline could each have done the same matching. Writing the rules layer in Go was the point of the project; using a packaged engine would have removed the part I wanted to learn.</p>
+<p><strong>Public broadcast surface: Azure Container Apps.</strong> Cloud Run, Fly.io, and Render would have been viable. Container Apps was selected because its always-free tier covers a single small workload, because it supports <code>min-replicas: 1</code> (Server-Sent Events connections require an always-on instance, which scale-to-zero platforms break), and because the rest of the project was already using Azure for the container registry.</p>
+<h2 id="public-surface-hardening">Public surface hardening</h2>
+<p>The asymmetric data path addresses the architectural exposure. The enrichment service itself is internet-reachable and required additional measures.</p>
+<p>The <code>/ingest</code> endpoint requires a shared token. The service refuses to start if the token is unset or set to a known placeholder value; an earlier version logged a warning and continued, which would have allowed the service to ship with an unauthenticated ingest endpoint. The startup check converts a silent failure mode into a loud one.</p>
+<p>Token comparison uses <code>crypto/subtle.ConstantTimeCompare</code>. With a single rarely-rotated token, a timing-side-channel attack against the comparison is theoretical. The constant-time comparison eliminates the class of issue at negligible cost.</p>
+<p>Credentials are redacted before broadcast. The Nginx access logs include request bodies, which means failed login attempts include passwords and other credential-shaped data. A set of regular expressions in the enrichment service replaces the values of common secret fields (<code>password</code>, <code>token</code>, <code>Authorization</code>, cookie values) with <code>[REDACTED]</code> before the event is written to the public stream. Detection rules run against the pre-redaction text, so MITRE tagging is unaffected by the redaction.</p>
+<p>The full source document is not included in broadcast events. An earlier version of the enrichment service emitted the entire Elasticsearch document as a <code>raw</code> field on each event, which would have leaked Filebeat metadata, host names, file paths, and any other contents of <code>_source</code>. The public event payload now contains only the fields the page consumes: id, timestamp, redacted message, stream name, and MITRE tags.</p>
+<p>These are standard measures for an internet-facing service. They are documented here because the service is internet-facing.</p>
+<h2 id="issues-encountered-during-development">Issues encountered during development</h2>
+<p>Three bugs from the build are worth recording.</p>
+<p><strong>Elasticsearch 8 disables <code>fielddata</code> on <code>_id</code> by default.</strong> The exporter&rsquo;s <code>search_after</code> pagination used <code>_id</code> as a tiebreaker for sorting after the timestamp, which produced an <code>illegal_argument_exception</code> from every query. Switching the tiebreaker to <code>_seq_no</code> resolves the issue. <code>_seq_no</code> is sortable, monotonic per shard, and supported across the version range.</p>
+<p><strong>Filebeat&rsquo;s autodiscover provider does not work reliably with kind.</strong> The local cluster runs on kind, a tool that runs Kubernetes nodes as Docker containers. With autodiscover enabled, Filebeat reported normal metrics but ran zero harvesters; the Kubernetes metadata matcher could not resolve the symlink chain that kind uses for container log files. Replacing autodiscover with a plain filestream input pointing at <code>/var/log/containers/&lt;workload&gt;-*.log</code> produced reliable log shipping at the cost of pod metadata enrichment, which the rest of the pipeline does not consume.</p>
+<p><strong>Elasticsearch returns sort values as typed JSON, not strings.</strong> The <code>@timestamp</code> field is returned as a <code>float64</code> of epoch milliseconds. Formatting it with <code>fmt.Sprintf(&quot;%v&quot;, ...)</code> produces scientific notation, which then fails to round-trip through the next <code>search_after</code> query. The exporter now type-switches on the sort value and formats integers and floats explicitly.</p>
+<h2 id="planned-extensions">Planned extensions</h2>
+<p>The current pipeline handles application-layer telemetry from a single source. Several extensions are planned.</p>
+<p>A Falco deployment in the cluster would add syscall-level detections for container-internal activity. A second exporter would forward Falco events through the same enrichment service and rule engine. A scheduled traffic generator would maintain a baseline level of activity in the feed independent of manual interaction. A small aggregation view on this page would group events by detection ID and display rolling counts, replacing the flat tail with something closer to a SIEM dashboard.</p>
+<p>Each of these is an additional use case for the same underlying pipeline. The core architecture is intended to remain stable as the lab grows.</p>
 
     </div>
 </article>
