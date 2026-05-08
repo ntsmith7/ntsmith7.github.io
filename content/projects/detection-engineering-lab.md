@@ -29,13 +29,27 @@ These three constraints are mutually satisfiable only if the data path is one-di
 
 ## Architecture
 
-OWASP Juice Shop runs in a local kind cluster behind an Nginx reverse proxy. The proxy exists to log request bodies and query strings in a format the detection layer can match against; Juice Shop's own application logs do not include the raw HTTP payloads. Filebeat tails the container logs and ships them to an Elasticsearch instance running in the same cluster. None of these components have ingress from outside the local environment.
+OWASP Juice Shop runs in a local Kubernetes cluster behind an Nginx reverse proxy. The proxy exists to log request bodies and query strings in a format the detection layer can match against; Juice Shop's own application logs do not include the raw HTTP payloads. Filebeat tails the container logs and ships them to an Elasticsearch instance running in the same cluster. None of these components have ingress from outside the local environment.
 
 Outbound connectivity to the public internet is handled by a Go service that polls Elasticsearch using `search_after` cursors, batches new documents, and pushes them to a separate enrichment service running in Azure Container Apps. The push is one-way and authenticated with a shared token. The exporter has no inbound listener, and the enrichment service has no path back into the cluster.
 
 The enrichment service performs two functions. It tags each event against a set of MITRE ATT&CK regex rules (`union select` matches T1190, `<script` matches T1059.007), and it broadcasts tagged events to clients connected to its `/stream` endpoint over Server-Sent Events. The endpoint is read-only.
 
 This produces a one-directional data path. Events flow outward from the cluster, through the exporter, through the enrichment service, and to any reader. No path exists in the reverse direction.
+
+## Tooling choices
+
+A few of the components had real alternatives. The choices worth justifying:
+
+**Local Kubernetes runtime: kind.** The local cluster could have run on minikube, k3d, k3s, or Docker Desktop's built-in Kubernetes. kind was chosen because it is the lightest of these on macOS, runs directly on the Docker daemon already needed for image builds, and tears down to zero state with a single command. That last point mattered during the build phase, when reproducing a clean state quickly was useful.
+
+**Vulnerable application: OWASP Juice Shop.** DVWA and WebGoat are the other obvious candidates. Juice Shop was selected for its active maintenance, its varied attack surface across REST endpoints and a JavaScript SPA, and the more realistic traffic patterns the SPA generates from background requests.
+
+**Log pipeline: Filebeat and Elasticsearch.** Loki with Promtail or Vector with ClickHouse would also have worked. Filebeat plus Elasticsearch was chosen because it is the same combination many production detection systems are built on, so the operational and query knowledge transfers. Elasticsearch's search-first model also makes ad-hoc rule iteration faster than a logs-as-metrics system would.
+
+**Detection layer: a custom Go service rather than an off-the-shelf rule engine.** Sigma, Elastic Detection Rules, and the Logstash pipeline could each have done the same matching. Writing the rules layer in Go was the point of the project; using a packaged engine would have removed the part I wanted to learn.
+
+**Public broadcast surface: Azure Container Apps.** Cloud Run, Fly.io, and Render would have been viable. Container Apps was selected because its always-free tier covers a single small workload, because it supports `min-replicas: 1` (Server-Sent Events connections require an always-on instance, which scale-to-zero platforms break), and because the rest of the project was already using Azure for the container registry.
 
 ## Public surface hardening
 
@@ -57,7 +71,7 @@ Three bugs from the build are worth recording.
 
 **Elasticsearch 8 disables `fielddata` on `_id` by default.** The exporter's `search_after` pagination used `_id` as a tiebreaker for sorting after the timestamp, which produced an `illegal_argument_exception` from every query. Switching the tiebreaker to `_seq_no` resolves the issue. `_seq_no` is sortable, monotonic per shard, and supported across the version range.
 
-**Filebeat's autodiscover provider does not work reliably on a kind cluster.** With autodiscover enabled, Filebeat reported normal metrics but ran zero harvesters. The Kubernetes metadata matcher could not resolve the symlink chain that kind uses for container log files. Replacing autodiscover with a plain filestream input pointing at `/var/log/containers/<workload>-*.log` produced reliable log shipping at the cost of pod metadata enrichment, which the rest of the pipeline does not consume.
+**Filebeat's autodiscover provider does not work reliably with kind.** The local cluster runs on kind, a tool that runs Kubernetes nodes as Docker containers. With autodiscover enabled, Filebeat reported normal metrics but ran zero harvesters; the Kubernetes metadata matcher could not resolve the symlink chain that kind uses for container log files. Replacing autodiscover with a plain filestream input pointing at `/var/log/containers/<workload>-*.log` produced reliable log shipping at the cost of pod metadata enrichment, which the rest of the pipeline does not consume.
 
 **Elasticsearch returns sort values as typed JSON, not strings.** The `@timestamp` field is returned as a `float64` of epoch milliseconds. Formatting it with `fmt.Sprintf("%v", ...)` produces scientific notation, which then fails to round-trip through the next `search_after` query. The exporter now type-switches on the sort value and formats integers and floats explicitly.
 
