@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Deployment Readiness Agent | Nicholas Smith</title>
+    
+    <link rel="stylesheet" href="/css/portfolio.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        
+<nav style="margin-bottom: 3rem; padding-top: 1rem;">
+    <a href="/" style="font-family: var(--font-mono); font-size: 1rem; color: var(--accent); text-decoration: none;">
+        &larr; cd /home
+    </a>
+</nav>
+
+<article class="post">
+    <header class="site-header" style="margin-bottom: 3rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+        <h1 style="margin: 0 0 0.5rem 0;">The Deployment Readiness Agent</h1>
+        
+        <div class="post-meta" style="font-family: var(--font-mono); color: var(--text-dim); font-size: 0.9rem;">
+            <time>2026-08-03</time>
+            
+            <span style="margin-left: 1rem;">
+                [ LangGraph, Pydantic, Agents, Evals, RTLS ]
+            </span>
+            
+        </div>
+    </header>
+
+    <div class="post-content">
+        <h2 id="overview">Overview</h2>
+<p>Part of my job is walking into hospitals and auditing their real-time location systems — the wireless networks that track where an infusion pump or a patient-protection tag actually is inside the building. I review telemetry from the location engine, figure out which tags aren&rsquo;t signaling reliably enough for the system to trust their position, and write it all up in a report a non-technical stakeholder can act on.</p>
+<p>It&rsquo;s careful, valuable work. It&rsquo;s also, in parts, a grind: aggregating hundreds of readings per tag, checking them against thresholds, and translating &ldquo;median RSSI of −81 dBm across two access points&rdquo; into a sentence a nurse manager understands.</p>
+<p>So I tried to automate the grind — not to replace the engineer, but to find the exact line where an AI agent <em>shouldn&rsquo;t</em> be trusted.</p>
+<h2 id="the-temptation-to-route-everything-through-the-model">The temptation to route everything through the model</h2>
+<p>The naive version of this project is one big prompt: dump the telemetry and the field notes into a language model, ask for a readiness report, done.</p>
+<p>That version fails the way LLMs famously fail. It will confidently tell you a tag has weak signal <em>because of a concrete wall it invented</em>, when the real data says nothing about walls at all. In a hospital life-safety context, a plausible-sounding fabricated cause is worse than no cause at all.</p>
+<p>So the first real design decision was about restraint: <strong>what should the language model actually be allowed to do?</strong></p>
+<h2 id="drawing-the-line-language-problems-vs-everything-else">Drawing the line: language problems vs. everything else</h2>
+<p>I split the system into three specialized agents, and inside the first two, I split the work again — deterministic Python for anything mathematical, the LLM only for genuine language problems.</p>
+<p>The <strong>discovery agent</strong> parses the raw engine export and aggregates each tag&rsquo;s hundreds of readings into a handful of summary numbers. Median APs that heard it, median best signal strength, the largest gap in its reporting, how often the engine placed it in the assigned zone. None of that touches the model:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_compute_aggregate</span>(entry, records, window_start, window_end):
+</span></span><span style="display:flex;"><span>    total <span style="color:#f92672">=</span> len(records)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ap_counts <span style="color:#f92672">=</span> [len(r<span style="color:#f92672">.</span>heard_by) <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> records]
+</span></span><span style="display:flex;"><span>    median_ap_count <span style="color:#f92672">=</span> float(statistics<span style="color:#f92672">.</span>median(ap_counts))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    best_rssi_per_record <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        max(ap<span style="color:#f92672">.</span>rssi_dbm <span style="color:#66d9ef">for</span> ap <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>heard_by) <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> records
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>    median_best_rssi <span style="color:#f92672">=</span> float(statistics<span style="color:#f92672">.</span>median(best_rssi_per_record))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    mean_confidence <span style="color:#f92672">=</span> sum(r<span style="color:#f92672">.</span>location_confidence <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> records) <span style="color:#f92672">/</span> total
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    zone_matches <span style="color:#f92672">=</span> sum(
+</span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> records
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>engine_zone_estimate <span style="color:#f92672">==</span> entry<span style="color:#f92672">.</span>assigned_zone
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    zone_match_pct <span style="color:#f92672">=</span> zone_matches <span style="color:#f92672">/</span> total
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>A median is a median. Asking an LLM to compute one just adds cost and a chance to be wrong.</p>
+<p>But that same agent <em>does</em> use the LLM for one thing: reading the technician&rsquo;s field notes. Those notes are gloriously messy:</p>
+<blockquote>
+<p><em>&ldquo;TAG-0031 portable xray unit — lead apron storage rack directly adjacent to tag mount point on the machine frame. heavy shielding material likely attenuating signal. discussed relocating tag to handle bar. no ticket yet will follow up&rdquo;</em></p>
+</blockquote>
+<p>Turning that into structured data — which tag, what cause, any ticket, any suggested action — is a real language problem. So the model gets a strict, schema-shaped job:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NoteFacts</span>(BaseModel):
+</span></span><span style="display:flex;"><span>    note_id:          str
+</span></span><span style="display:flex;"><span>    referenced_tags:  list[str]     <span style="color:#75715e"># normalized to &#34;MRW-TAG-XXXX&#34;</span>
+</span></span><span style="display:flex;"><span>    referenced_zones: list[str]     <span style="color:#75715e"># normalized zone names</span>
+</span></span><span style="display:flex;"><span>    stated_cause:     str <span style="color:#f92672">|</span> <span style="color:#66d9ef">None</span>    <span style="color:#75715e"># verbatim-ish; None if none stated</span>
+</span></span><span style="display:flex;"><span>    ticket_refs:      list[str]
+</span></span><span style="display:flex;"><span>    suggested_action: str <span style="color:#f92672">|</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>    unresolvable:     bool <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span></code></pre></div><p>The <strong>analysis agent</strong> does the same dance. A deterministic threshold engine compares each tag&rsquo;s stats against a per-zone-type spec — a critical-care unit has stricter requirements than a supply closet — and emits typed violations. Then the LLM does the part only language understanding can: matching each violation to the technician note that explains it and grouping related problems into a coherent finding.</p>
+<p>The <strong>writer agent</strong> is the one fully-LLM stage, because turning structured findings into readable prose for a non-technical reader is exactly what these models are for.</p>
+<p>The lesson, and the thing I&rsquo;d emphasize to anyone building agent systems today: <strong>using an LLM well is mostly about deciding what <em>not</em> to use it for.</strong></p>
+<h2 id="the-rule-that-made-it-trustworthy-no-guessing">The rule that made it trustworthy: no guessing</h2>
+<p>Here&rsquo;s the constraint the whole project is built around:</p>
+<blockquote>
+<p>The AI is never allowed to state a root cause unless a human technician wrote it down first.</p>
+</blockquote>
+<p>If the data shows a tag has weak signal and a field note explains why, the report cites that cause and attributes it to the technician. If there&rsquo;s no note, the report says the cause is unknown and on-site investigation is needed. It never fills the gap with a plausible guess.</p>
+<p>I enforced this at three layers, because a prompt instruction alone is not enforcement.</p>
+<p><strong>Layer 1 — the prompts</strong> never invite the model to infer or diagnose. The extraction system prompt is explicit:</p>
+<blockquote>
+<p><em>&ldquo;stated_cause is the technician&rsquo;s explanation of WHY something is happening — not just WHAT. NEVER invent, infer, or guess a cause. If the technician did not explicitly state why something is happening, stated_cause MUST be null.&rdquo;</em></p>
+</blockquote>
+<p><strong>Layer 2 — a Pydantic validator</strong> on the final <code>Gap</code> model rejects any finding that has a stated cause but no source note attached to it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Gap</span>(BaseModel):
+</span></span><span style="display:flex;"><span>    severity:           Literal[<span style="color:#e6db74">&#34;critical&#34;</span>, <span style="color:#e6db74">&#34;high&#34;</span>, <span style="color:#e6db74">&#34;medium&#34;</span>, <span style="color:#e6db74">&#34;low&#34;</span>]
+</span></span><span style="display:flex;"><span>    tag_ids:            list[str]
+</span></span><span style="display:flex;"><span>    zone:               str
+</span></span><span style="display:flex;"><span>    violation_types:    list[ViolationType]
+</span></span><span style="display:flex;"><span>    finding:            str
+</span></span><span style="display:flex;"><span>    stated_cause:       str <span style="color:#f92672">|</span> <span style="color:#66d9ef">None</span>    <span style="color:#75715e"># ONLY from a technician note; never invented</span>
+</span></span><span style="display:flex;"><span>    source_note_ids:    list[str]     <span style="color:#75715e"># empty iff stated_cause is None</span>
+</span></span><span style="display:flex;"><span>    ticket_refs:        list[str]
+</span></span><span style="display:flex;"><span>    recommended_action: str
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@model_validator</span>(mode<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;after&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">cause_requires_source</span>(self) <span style="color:#f92672">-&gt;</span> <span style="color:#e6db74">&#34;Gap&#34;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>stated_cause <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span> <span style="color:#f92672">and</span> len(self<span style="color:#f92672">.</span>source_note_ids) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;stated_cause is set but source_note_ids is empty. &#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Every stated cause must trace to a note ID. &#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;If no note explains this violation, set stated_cause to None.&#34;</span>
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self
+</span></span></code></pre></div><p>Malformed output doesn&rsquo;t get through. It raises, and the pipeline retries the LLM call with the validation error appended to the prompt.</p>
+<p><strong>Layer 3 — an automated evaluation</strong> checks every generated report for causes that can&rsquo;t be traced back to a note:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">JudgeVerdict</span>(BaseModel):
+</span></span><span style="display:flex;"><span>    all_gaps_covered:       bool
+</span></span><span style="display:flex;"><span>    fabricated_causes:      list[str]   <span style="color:#75715e"># MUST be []</span>
+</span></span><span style="display:flex;"><span>    passing_tags_mentioned: bool
+</span></span><span style="display:flex;"><span>    unknown_causes_handled: bool
+</span></span><span style="display:flex;"><span>    jargon_violations:      list[str]
+</span></span><span style="display:flex;"><span>    score:                  int         <span style="color:#75715e"># 0–10</span>
+</span></span></code></pre></div><p>A non-empty <code>fabricated_causes</code> list fails the build. That third layer is the one most portfolio projects skip, and it&rsquo;s the one I&rsquo;d argue matters most.</p>
+<h2 id="what-the-output-actually-looks-like">What the output actually looks like</h2>
+<p>The three layers pay off in the report. Here are two side-by-side findings the pipeline produced on the demo dataset — one with a cited technician cause, one without:</p>
+<blockquote>
+<h3 id="surgsuite-1--mrw-tag-0031-portable-x-ray">SurgSuite-1 — MRW-TAG-0031 (portable x-ray)</h3>
+<p>Median best RSSI <strong>−81 dBm</strong> across two access points, against the critical-care threshold of −75 dBm. Mean location confidence <strong>0.39</strong>, against the 0.80 threshold. The field technician noted that the lead apron storage rack sits directly adjacent to the tag mount point on the machine frame, and identified the heavy shielding material as the likely cause of signal attenuation. Relocation of the tag to the machine&rsquo;s handle bar was suggested on-site.</p>
+<p><strong>Recommended action:</strong> implement the field technician&rsquo;s suggested tag relocation and re-measure signal after the move.</p>
+<h3 id="nursingunit-b--mrw-tag-0030-infusion-pump">NursingUnit-B — MRW-TAG-0030 (infusion pump)</h3>
+<p>Median AP count <strong>1.0</strong>, against the critical-care requirement of at least 3 access points. Location confidence is correspondingly low.</p>
+<p><strong>Recommended action:</strong> cause unknown — on-site investigation required to determine whether the deficit is due to AP placement, hardware failure, or physical obstruction in the zone.</p>
+</blockquote>
+<p>Same report, same pipeline, two different tags: one gets a rich causal explanation because a technician documented it, the other gets a plain statement of the numbers and an honest call for investigation. That&rsquo;s the entire thesis of the project on one page.</p>
+<h2 id="how-i-know-it-works">How I know it works</h2>
+<p>An agent that produces plausible output is not the same as an agent that produces <em>correct</em> output. The only way to tell the difference is to measure it.</p>
+<p>The evaluation harness has two kinds of checks. For the deterministic stages — the aggregation and threshold math — I hand-authored the correct answer for a set of test cases and the pipeline&rsquo;s output has to match exactly. For the report itself, where there&rsquo;s no single correct answer, I used a second LLM as a judge, structured against <code>JudgeVerdict</code>: does the report cover every real problem, does it invent any causes, does it explain jargon, does it acknowledge the tags that passed?</p>
+<p>Every run gets logged, tagged with the prompt version that produced it. When I tweak a prompt to fix one thing, I can immediately see whether I broke something else. Same instinct as a regression test suite — just pointed at a non-deterministic system.</p>
+<p>The most useful test case wasn&rsquo;t the happy path. It was the one where I fed the system a note that explained the <em>wrong</em> tag&rsquo;s problem, to see if it would cross-wire the attribution. Watching it either resist that or fall for it told me more about whether the design worked than any clean run ever did.</p>
+<h2 id="where-a-human-still-belongs">Where a human still belongs</h2>
+<p>The pipeline produces a <em>draft</em>. A person still reviews it, corrects it, and owns what goes to the client — and every correction they make is exactly the kind of data that would make the next version better.</p>
+<p>That&rsquo;s not a limitation I&rsquo;m apologizing for. It&rsquo;s the point. The valuable thing an experienced engineer does on a site visit isn&rsquo;t the arithmetic — it&rsquo;s the judgment. The system takes over the arithmetic and the first-draft translation, and leaves the judgment where it belongs.</p>
+<h2 id="whats-next">What&rsquo;s next</h2>
+<p>The current version is deliberately narrow: one scenario, three agents, a linear flow, and a hard rule against guessing. The natural next steps are a critic agent that reviews the writer&rsquo;s draft before a human sees it, and a formal approval checkpoint where the pipeline pauses for sign-off before anything ships. Both are interesting precisely because they&rsquo;re easy to do badly — a critic that rubber-stamps everything is worse than no critic at all — so they&rsquo;ll get the same measure-everything treatment.</p>
+<p>If there&rsquo;s a single takeaway from building this: the impressive part of an AI agent isn&rsquo;t how much it can do. It&rsquo;s how clearly you&rsquo;ve drawn the line around what it&rsquo;s <em>allowed</em> to do — and whether you can prove it stays on the right side of that line.</p>
+<hr>
+<p><em>Built with synthetic data modeled on real-time location deployments. No real client data, facility, or telemetry was used.</em></p>
+
+    </div>
+</article>
+
+        
+        <footer class="site-footer">
+            <div class="social-links">
+                <a href="https://github.com/ntsmith7" target="_blank">github</a>
+                <a href="https://www.linkedin.com/in/nicholastaylorsmith" target="_blank">linkedin</a>
+                <a href="mailto:smittydev33@gmail.com">email</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

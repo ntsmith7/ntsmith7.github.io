@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on Nicholas Smith</title>
+    <link>http://localhost:1313/projects/</link>
+    <description>Recent content in Projects on Nicholas Smith</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 03 Aug 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/projects/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Deployment Readiness Agent</title>
+      <link>http://localhost:1313/projects/deployment-readiness-agent/</link>
+      <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/deployment-readiness-agent/</guid>
+      <description>A three-agent pipeline that drafts hospital deployment-readiness reports from synthetic RTLS telemetry — built around a single rule: the AI is not allowed to guess a root cause.</description>
+    </item>
+    <item>
+      <title>A Live Detection Engineering Lab</title>
+      <link>http://localhost:1313/projects/detection-engineering-lab/</link>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/detection-engineering-lab/</guid>
+      <description>A detection pipeline running against an isolated lab of OWASP Juice Shop. Real attack telemetry, classified against MITRE ATT&amp;amp;CK, streamed live to this page.</description>
+    </item>
+  </channel>
+</rss>
