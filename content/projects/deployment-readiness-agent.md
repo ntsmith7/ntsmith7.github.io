@@ -2,30 +2,28 @@
 title: "The Deployment Readiness Agent"
 date: 2026-08-03
 tags: ["LangGraph", "Pydantic", "Agents", "Evals", "RTLS"]
-summary: "A three-agent pipeline that drafts hospital deployment-readiness reports from synthetic RTLS telemetry — built around a single rule: the AI is not allowed to guess a root cause."
+summary: "A three-agent pipeline that drafts hospital deployment-readiness reports from synthetic RTLS telemetry, built around a single constraint: the model is not allowed to state a root cause without a source note."
 ---
 
 ## Overview
 
-Part of my job is walking into hospitals and auditing their real-time location systems — the wireless networks that track where an infusion pump or a patient-protection tag actually is inside the building. I review telemetry from the location engine, figure out which tags aren't signaling reliably enough for the system to trust their position, and write it all up in a report a non-technical stakeholder can act on.
+RTLS (real-time location system) deployments in hospitals depend on wireless tags being heard reliably by multiple access points. When they aren't, location tracking degrades — and pre-deployment audits exist to catch that before go-live.
 
-It's careful, valuable work. It's also, in parts, a grind: aggregating hundreds of readings per tag, checking them against thresholds, and translating "median RSSI of −81 dBm across two access points" into a sentence a nurse manager understands.
+The audit workflow has a routine shape: pull telemetry from the location engine, aggregate per-tag signal statistics, compare them against zone-specific readiness thresholds, and produce a report that surfaces the failing tags with recommended actions.
 
-So I tried to automate the grind — not to replace the engineer, but to find the exact line where an AI agent *shouldn't* be trusted.
+This project is a three-agent pipeline that automates the draft version of that report from synthetic telemetry, technician field notes, and a YAML readiness spec. It is built around a single constraint that shaped every design decision: **the language model is not permitted to state a root cause unless a human technician documented it first.**
 
-## The temptation to route everything through the model
+## Where the LLM belongs, and where it doesn't
 
-The naive version of this project is one big prompt: dump the telemetry and the field notes into a language model, ask for a readiness report, done.
+A common failure mode in agent systems is routing everything through the model. The math, the parsing, the comparisons — all of it. It costs more, runs slower, and introduces a chance to be wrong on operations that were previously deterministic.
 
-That version fails the way LLMs famously fail. It will confidently tell you a tag has weak signal *because of a concrete wall it invented*, when the real data says nothing about walls at all. In a hospital life-safety context, a plausible-sounding fabricated cause is worse than no cause at all.
+The pipeline splits work by whether the task is genuinely a language problem:
 
-So the first real design decision was about restraint: **what should the language model actually be allowed to do?**
+**Deterministic Python:** parsing the engine export, aggregating per-tag statistics over the evaluation window, comparing values against the readiness spec, emitting typed violations.
 
-## Drawing the line: language problems vs. everything else
+**LLM:** extracting structured facts from freeform technician notes, attributing violations to note-stated causes, and generating the final report prose.
 
-I split the system into three specialized agents, and inside the first two, I split the work again — deterministic Python for anything mathematical, the LLM only for genuine language problems.
-
-The **discovery agent** parses the raw engine export and aggregates each tag's hundreds of readings into a handful of summary numbers. Median APs that heard it, median best signal strength, the largest gap in its reporting, how often the engine placed it in the assigned zone. None of that touches the model:
+The aggregation stage is the clearest case for keeping the model out. Per tag, the pipeline reduces hundreds of engine records down to a handful of numbers using standard library statistics:
 
 ```python
 def _compute_aggregate(entry, records, window_start, window_end):
@@ -49,13 +47,13 @@ def _compute_aggregate(entry, records, window_start, window_end):
     ...
 ```
 
-A median is a median. Asking an LLM to compute one just adds cost and a chance to be wrong.
+Threshold evaluation is similarly deterministic. A per-zone-type YAML spec defines the readiness criteria (critical-care zones have stricter requirements than ancillary ones), and violations are emitted as typed objects for the analysis stage to consume.
 
-But that same agent *does* use the LLM for one thing: reading the technician's field notes. Those notes are gloriously messy:
+Where the LLM does belong is where the input is unstructured language. Technician notes captured during a walk-through have exactly the shape LLMs handle well:
 
 > *"TAG-0031 portable xray unit — lead apron storage rack directly adjacent to tag mount point on the machine frame. heavy shielding material likely attenuating signal. discussed relocating tag to handle bar. no ticket yet will follow up"*
 
-Turning that into structured data — which tag, what cause, any ticket, any suggested action — is a real language problem. So the model gets a strict, schema-shaped job:
+Extracting which tag, what cause, and any suggested action from that is a genuine language task. The extraction is constrained by a schema:
 
 ```python
 class NoteFacts(BaseModel):
@@ -68,27 +66,17 @@ class NoteFacts(BaseModel):
     unresolvable:     bool = False
 ```
 
-The **analysis agent** does the same dance. A deterministic threshold engine compares each tag's stats against a per-zone-type spec — a critical-care unit has stricter requirements than a supply closet — and emits typed violations. Then the LLM does the part only language understanding can: matching each violation to the technician note that explains it and grouping related problems into a coherent finding.
+## The no-fabricated-causes constraint
 
-The **writer agent** is the one fully-LLM stage, because turning structured findings into readable prose for a non-technical reader is exactly what these models are for.
+Fabricated root causes are the failure mode this project is organized around preventing. In a domain where a downstream action depends on the reported cause, a plausible-sounding invention is worse than an honest "unknown." The system is designed such that a cause in the final report is traceable to a specific technician note or the report says the cause is unknown.
 
-The lesson, and the thing I'd emphasize to anyone building agent systems today: **using an LLM well is mostly about deciding what *not* to use it for.**
+That constraint is enforced at three layers.
 
-## The rule that made it trustworthy: no guessing
-
-Here's the constraint the whole project is built around:
-
-> The AI is never allowed to state a root cause unless a human technician wrote it down first.
-
-If the data shows a tag has weak signal and a field note explains why, the report cites that cause and attributes it to the technician. If there's no note, the report says the cause is unknown and on-site investigation is needed. It never fills the gap with a plausible guess.
-
-I enforced this at three layers, because a prompt instruction alone is not enforcement.
-
-**Layer 1 — the prompts** never invite the model to infer or diagnose. The extraction system prompt is explicit:
+**Layer 1 — the prompt** for the note-extraction call is explicit about what a cause is and is not:
 
 > *"stated_cause is the technician's explanation of WHY something is happening — not just WHAT. NEVER invent, infer, or guess a cause. If the technician did not explicitly state why something is happening, stated_cause MUST be null."*
 
-**Layer 2 — a Pydantic validator** on the final `Gap` model rejects any finding that has a stated cause but no source note attached to it:
+**Layer 2 — a Pydantic validator** on the `Gap` model rejects any finding where a stated cause exists without a source note attached:
 
 ```python
 class Gap(BaseModel):
@@ -97,7 +85,7 @@ class Gap(BaseModel):
     zone:               str
     violation_types:    list[ViolationType]
     finding:            str
-    stated_cause:       str | None    # ONLY from a technician note; never invented
+    stated_cause:       str | None    # only from a technician note
     source_note_ids:    list[str]     # empty iff stated_cause is None
     ticket_refs:        list[str]
     recommended_action: str
@@ -113,25 +101,25 @@ class Gap(BaseModel):
         return self
 ```
 
-Malformed output doesn't get through. It raises, and the pipeline retries the LLM call with the validation error appended to the prompt.
+Malformed model output raises on construction. The LLM call is retried once with the validation error appended to the prompt.
 
-**Layer 3 — an automated evaluation** checks every generated report for causes that can't be traced back to a note:
+**Layer 3 — an evaluation** run against every generated report checks that no cause in the prose is untraceable to a note:
 
 ```python
 class JudgeVerdict(BaseModel):
     all_gaps_covered:       bool
-    fabricated_causes:      list[str]   # MUST be []
+    fabricated_causes:      list[str]   # required to be []
     passing_tags_mentioned: bool
     unknown_causes_handled: bool
     jargon_violations:      list[str]
     score:                  int         # 0–10
 ```
 
-A non-empty `fabricated_causes` list fails the build. That third layer is the one most portfolio projects skip, and it's the one I'd argue matters most.
+A non-empty `fabricated_causes` field fails the case.
 
-## What the output actually looks like
+## Output
 
-The three layers pay off in the report. Here are two side-by-side findings the pipeline produced on the demo dataset — one with a cited technician cause, one without:
+The constraint produces a report where the presence or absence of a cause is meaningful rather than cosmetic. Two findings from a demo run, with different note coverage:
 
 > ### SurgSuite-1 — MRW-TAG-0031 (portable x-ray)
 > Median best RSSI **−81 dBm** across two access points, against the critical-care threshold of −75 dBm. Mean location confidence **0.39**, against the 0.80 threshold. The field technician noted that the lead apron storage rack sits directly adjacent to the tag mount point on the machine frame, and identified the heavy shielding material as the likely cause of signal attenuation. Relocation of the tag to the machine's handle bar was suggested on-site.
@@ -143,29 +131,27 @@ The three layers pay off in the report. Here are two side-by-side findings the p
 >
 > **Recommended action:** cause unknown — on-site investigation required to determine whether the deficit is due to AP placement, hardware failure, or physical obstruction in the zone.
 
-Same report, same pipeline, two different tags: one gets a rich causal explanation because a technician documented it, the other gets a plain statement of the numbers and an honest call for investigation. That's the entire thesis of the project on one page.
+Both findings are correctly flagged by the threshold engine. Only one has a cited cause, because only one had a technician note attached to it in the source data.
 
-## How I know it works
+## Evaluation
 
-An agent that produces plausible output is not the same as an agent that produces *correct* output. The only way to tell the difference is to measure it.
+The pipeline is non-deterministic in its LLM stages, so correctness has to be measured rather than assumed.
 
-The evaluation harness has two kinds of checks. For the deterministic stages — the aggregation and threshold math — I hand-authored the correct answer for a set of test cases and the pipeline's output has to match exactly. For the report itself, where there's no single correct answer, I used a second LLM as a judge, structured against `JudgeVerdict`: does the report cover every real problem, does it invent any causes, does it explain jargon, does it acknowledge the tags that passed?
+Deterministic stages (aggregation, threshold evaluation) are covered by exact-match tests against hand-authored expected outputs. Given a fixed input dataset, the aggregation function's output is a stable structure that can be diffed byte-for-byte.
 
-Every run gets logged, tagged with the prompt version that produced it. When I tweak a prompt to fix one thing, I can immediately see whether I broke something else. Same instinct as a regression test suite — just pointed at a non-deterministic system.
+The report stage uses a second LLM configured as a judge, structured against `JudgeVerdict`. It scores coverage of the underlying gaps, checks for fabricated causes, and flags jargon that wasn't glossed for a non-technical reader. Each run is logged alongside the prompt version hash, so regressions on a prompt change are detectable immediately.
 
-The most useful test case wasn't the happy path. It was the one where I fed the system a note that explained the *wrong* tag's problem, to see if it would cross-wire the attribution. Watching it either resist that or fall for it told me more about whether the design worked than any clean run ever did.
+The most useful test case in the harness is one where a field note describes a problem in the *wrong* zone from where it was written. It exists specifically to check that the attribution stage doesn't cross-wire causes to violations that happen to co-occur in the same run.
 
-## Where a human still belongs
+## Human review
 
-The pipeline produces a *draft*. A person still reviews it, corrects it, and owns what goes to the client — and every correction they make is exactly the kind of data that would make the next version better.
-
-That's not a limitation I'm apologizing for. It's the point. The valuable thing an experienced engineer does on a site visit isn't the arithmetic — it's the judgment. The system takes over the arithmetic and the first-draft translation, and leaves the judgment where it belongs.
+The pipeline produces a draft. Sign-off remains with the engineer reviewing it. Corrections captured during that review are the natural training signal for a future version, and a formal approval checkpoint is planned as the next iteration.
 
 ## What's next
 
-The current version is deliberately narrow: one scenario, three agents, a linear flow, and a hard rule against guessing. The natural next steps are a critic agent that reviews the writer's draft before a human sees it, and a formal approval checkpoint where the pipeline pauses for sign-off before anything ships. Both are interesting precisely because they're easy to do badly — a critic that rubber-stamps everything is worse than no critic at all — so they'll get the same measure-everything treatment.
-
-If there's a single takeaway from building this: the impressive part of an AI agent isn't how much it can do. It's how clearly you've drawn the line around what it's *allowed* to do — and whether you can prove it stays on the right side of that line.
+- **Critic agent** reviewing the writer's draft before human review, with an eval that specifically tests whether it catches injected errors rather than passing everything through
+- **Approval checkpoint** via LangGraph's interrupt mechanism, with state checkpointed to disk between the draft and the human decision
+- **Additional input formats** beyond the current synthetic engine-export shape
 
 ---
 
