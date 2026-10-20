@@ -1,0 +1,1847 @@
+{
+  "description": "Saved synthetic evaluation batch used as evidence in A Citation Isn't Proof. Historical outputs are preserved, including incorrect explanations. This is not a measurement of the latest prompts or a general accuracy benchmark.",
+  "source_batch": "assessment_batch_20261012T194541114023Z",
+  "batch_summary": {
+    "model": "deepseek-v4-flash",
+    "planned_runs": 6,
+    "runs": [
+      {
+        "report": "1_original.json",
+        "case_set": "original",
+        "repeat": 1,
+        "summary": {
+          "total": 6,
+          "completed": 6,
+          "errors": 0,
+          "matched": 6,
+          "mismatched": 0,
+          "completion_rate": 1.0,
+          "both_labels_agreement": 1.0,
+          "claim_support_agreement": 1.0,
+          "violation_relevance_agreement": 1.0,
+          "explanations_pending_review": 6
+        }
+      },
+      {
+        "report": "2_original.json",
+        "case_set": "original",
+        "repeat": 2,
+        "summary": {
+          "total": 6,
+          "completed": 6,
+          "errors": 0,
+          "matched": 6,
+          "mismatched": 0,
+          "completion_rate": 1.0,
+          "both_labels_agreement": 1.0,
+          "claim_support_agreement": 1.0,
+          "violation_relevance_agreement": 1.0,
+          "explanations_pending_review": 6
+        }
+      },
+      {
+        "report": "3_original.json",
+        "case_set": "original",
+        "repeat": 3,
+        "summary": {
+          "total": 6,
+          "completed": 6,
+          "errors": 0,
+          "matched": 6,
+          "mismatched": 0,
+          "completion_rate": 1.0,
+          "both_labels_agreement": 1.0,
+          "claim_support_agreement": 1.0,
+          "violation_relevance_agreement": 1.0,
+          "explanations_pending_review": 6
+        }
+      },
+      {
+        "report": "4_fresh.json",
+        "case_set": "fresh",
+        "repeat": 1,
+        "summary": {
+          "total": 3,
+          "completed": 3,
+          "errors": 0,
+          "matched": 3,
+          "mismatched": 0,
+          "completion_rate": 1.0,
+          "both_labels_agreement": 1.0,
+          "claim_support_agreement": 1.0,
+          "violation_relevance_agreement": 1.0,
+          "explanations_pending_review": 3
+        }
+      },
+      {
+        "report": "5_fresh.json",
+        "case_set": "fresh",
+        "repeat": 2,
+        "summary": {
+          "total": 3,
+          "completed": 3,
+          "errors": 0,
+          "matched": 3,
+          "mismatched": 0,
+          "completion_rate": 1.0,
+          "both_labels_agreement": 1.0,
+          "claim_support_agreement": 1.0,
+          "violation_relevance_agreement": 1.0,
+          "explanations_pending_review": 3
+        }
+      },
+      {
+        "report": "6_fresh.json",
+        "case_set": "fresh",
+        "repeat": 3,
+        "summary": {
+          "total": 3,
+          "completed": 3,
+          "errors": 0,
+          "matched": 3,
+          "mismatched": 0,
+          "completion_rate": 1.0,
+          "both_labels_agreement": 1.0,
+          "claim_support_agreement": 1.0,
+          "violation_relevance_agreement": 1.0,
+          "explanations_pending_review": 3
+        }
+      }
+    ],
+    "status": "complete",
+    "explanation_review": "pending"
+  },
+  "runs": [
+    {
+      "source_file": "1_original.json",
+      "source_sha256": "a6eb8f67826e77e8f5fb85eb15c887ce7b8e536823e5051fd49e2d44f9c1bc44",
+      "model": "deepseek-v4-flash",
+      "created_at": "2026-10-12T19:45:56.563530+00:00",
+      "cases_sha256": "cbf9e1a0059e8b7703600dd89eaa4b84f8f72ed463d22c4a2da652e4cac55b38",
+      "assessment_mode": "separate_support_and_relevance",
+      "prompt_schema_sha256": "618d0fda4c7d0cd2d995156cf796d0541a74671655a8ebc9982a8f74d358b932",
+      "stage_tool_choices": {
+        "support": {
+          "type": "tool",
+          "name": "assess_support"
+        },
+        "relevance": {
+          "type": "tool",
+          "name": "assess_relevance"
+        }
+      },
+      "request_options": {
+        "max_tokens": 1024,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "request_options_sha256": "fb7e4d671074b787b6beb586f31810ed5e78072d455fb7453c4c166b4c9de0a5",
+      "summary": {
+        "total": 6,
+        "completed": 6,
+        "errors": 0,
+        "matched": 6,
+        "mismatched": 0,
+        "completion_rate": 1.0,
+        "both_labels_agreement": 1.0,
+        "claim_support_agreement": 1.0,
+        "violation_relevance_agreement": 1.0,
+        "explanations_pending_review": 6
+      },
+      "limitations": "Agreement uses all cases as the denominator, including errors. Six authored examples are not broad accuracy evidence. Explanations require human review for unsupported assertions and lost uncertainty; label matches alone do not establish semantic correctness.",
+      "results": [
+        {
+          "case_id": "supported_explanation",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-01",
+              "text": "For MRW-TAG-0031, rack shielding is likely attenuating the signal.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-01",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding is likely attenuating the signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "rack shielding is likely attenuating the signal."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The claim preserves the note's explicit explanation and its 'likely' qualification.",
+            "relevance_explanation": "Signal attenuation directly concerns the weak-signal violation; this is still a technician's hypothesis."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note explicitly states for MRW-TAG-0031 that \"rack shielding is likely attenuating the signal,\" matching the claim's phrasing and qualifier (\"likely\").",
+            "relevance_explanation": "The claim proposes rack shielding attenuation as the mechanism, which directly addresses why the tag's received signal strength (RSSI) would fall below the threshold, matching the WEAK_RSSI violation. This is a relevance judgment only, not an endorsement that shielding caused the weak signal."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "real_quote_unrelated_cause",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-02",
+              "text": "Rack shielding likely attenuates the signal from MRW-TAG-0031.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-02",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "An AP power outage caused the tag's reporting gap.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "Rack shielding likely attenuates the signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note says nothing about a power outage. The authentic quote does not support the proposed cause.",
+            "relevance_explanation": "The proposed claim explicitly concerns the reporting gap, but that relevance cannot supply the missing source support."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note attributes MRW-TAG-0031's signal attenuation to rack shielding; it does not mention an AP power outage or any reporting gap, so it provides no evidence for the claimed cause and in fact points to a different explanation.",
+            "relevance_explanation": "The claim proposes that an AP power outage caused the tag's reporting gap, which directly addresses the cause of the REPORT_GAP violation identified for this zone. The mechanism pertains to the same tag and violation issue, without necessarily being true."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "uncertainty_overstated",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-03",
+              "text": "Rack shielding may be causing MRW-TAG-0031's weak signal; this has not been confirmed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-03",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding is the confirmed cause of the weak signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "Rack shielding may be causing MRW-TAG-0031's weak signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The claim asserts confirmation that the note explicitly denies. Assess the claim as written rather than silently weakening it.",
+            "relevance_explanation": "Both the claim and violation concern weak signal strength."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note states rack shielding \"may be causing\" the weak signal and explicitly adds \"this has not been confirmed,\" which contradicts the claim that it is the confirmed cause.",
+            "relevance_explanation": "The stated cause attributes the weak received signal strength (RSSI of -81.0, below the -75.0 threshold) to rack shielding blocking the radio signal. This directly proposes a physical mechanism for the WEAK_RSSI violation, though it is only a relevance assessment, not a judgment that the shielding explanation is confirmed or correct."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "negation_outside_quote",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-04",
+              "text": "For MRW-TAG-0031, we ruled out the hypothesis that rack shielding caused the weak signal. The cause remains unknown.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-04",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding caused the weak signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "rack shielding caused the weak signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The quote is an exact substring, but the full sentence rules out the proposed explanation.",
+            "relevance_explanation": "The rejected hypothesis concerns the same weak-signal issue; relevance does not override negation."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note explicitly states that the hypothesis that rack shielding caused the weak signal was ruled out, which directly contradicts the claim.",
+            "relevance_explanation": "The stated cause is \"Rack shielding caused the weak signal,\" which directly addresses the WEAK_RSSI violation (observed -81.0 vs threshold -75.0) by proposing rack shielding as the mechanism that weakened the received signal strength. This mechanism pertains to the reported weak-signal condition, though it is not an assessment of whether shielding actually caused it."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "supported_but_irrelevant",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-05",
+              "text": "For the equipment carrying MRW-TAG-0031, a loose caster caused the cart to wobble. This is a mechanical observation only; no radio issue was investigated.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-05",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "A loose caster caused the cart to wobble.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "a loose caster caused the cart to wobble."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly attributes the cart wobble to a loose caster.",
+            "relevance_explanation": "The claim explains a mechanical issue, not weak signal. Do not invent a link between them."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note states verbatim that \"a loose caster caused the cart to wobble,\" directly backing the claim as phrased.",
+            "relevance_explanation": "The stated cause\u2014a loose caster making the cart wobble\u2014describes a mechanical/physical mobility problem, which has no identified relationship to the WEAK_RSSI radio signal violation (observed -81.0 dBm against a -75.0 threshold). No causal or conceptual link to signal strength is proposed."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "ambiguous_explanation",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-06",
+              "text": "Discussion for MRW-TAG-0031 covered equipment movement and battery replacement, plus missed reports and a cart problem. Technician: 'That may explain the problem.' No further detail recorded.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-06",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Equipment movement may explain the problem.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "That may explain the problem."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "uncertain",
+            "violation_relevance": "uncertain",
+            "support_explanation": "The referent of 'That' is ambiguous between the discussed items, so support for equipment movement is unclear.",
+            "relevance_explanation": "The unspecified problem could mean missed reports or the cart problem. The note does not resolve that ambiguity."
+          },
+          "actual": {
+            "claim_support": "uncertain",
+            "violation_relevance": "uncertain",
+            "support_explanation": "The note's only occurrence of \"That may explain the problem\" is an unresolved referent. It mentions equipment movement, battery replacement, missed reports and a cart problem, but does not establish that \"that\" refers to equipment movement, so the note does not back the claim as phrased.",
+            "relevance_explanation": "The claim proposes \"equipment movement may explain the problem\" as the cause. Because it never specifies which problem it refers to, its connection to the REPORT_GAP violation (observed 300.0 vs. threshold 15.0) is ambiguous and cannot be determined without assuming the vague reference means this violation."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        }
+      ]
+    },
+    {
+      "source_file": "2_original.json",
+      "source_sha256": "a194956d936eeb979a2d48e31f44d26e033743b3829b0012b2398ef766bc8c7f",
+      "model": "deepseek-v4-flash",
+      "created_at": "2026-10-12T19:46:11.606075+00:00",
+      "cases_sha256": "cbf9e1a0059e8b7703600dd89eaa4b84f8f72ed463d22c4a2da652e4cac55b38",
+      "assessment_mode": "separate_support_and_relevance",
+      "prompt_schema_sha256": "618d0fda4c7d0cd2d995156cf796d0541a74671655a8ebc9982a8f74d358b932",
+      "stage_tool_choices": {
+        "support": {
+          "type": "tool",
+          "name": "assess_support"
+        },
+        "relevance": {
+          "type": "tool",
+          "name": "assess_relevance"
+        }
+      },
+      "request_options": {
+        "max_tokens": 1024,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "request_options_sha256": "fb7e4d671074b787b6beb586f31810ed5e78072d455fb7453c4c166b4c9de0a5",
+      "summary": {
+        "total": 6,
+        "completed": 6,
+        "errors": 0,
+        "matched": 6,
+        "mismatched": 0,
+        "completion_rate": 1.0,
+        "both_labels_agreement": 1.0,
+        "claim_support_agreement": 1.0,
+        "violation_relevance_agreement": 1.0,
+        "explanations_pending_review": 6
+      },
+      "limitations": "Agreement uses all cases as the denominator, including errors. Six authored examples are not broad accuracy evidence. Explanations require human review for unsupported assertions and lost uncertainty; label matches alone do not establish semantic correctness.",
+      "results": [
+        {
+          "case_id": "supported_explanation",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-01",
+              "text": "For MRW-TAG-0031, rack shielding is likely attenuating the signal.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-01",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding is likely attenuating the signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "rack shielding is likely attenuating the signal."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The claim preserves the note's explicit explanation and its 'likely' qualification.",
+            "relevance_explanation": "Signal attenuation directly concerns the weak-signal violation; this is still a technician's hypothesis."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note directly states, for the same tag, that rack shielding is likely attenuating the signal, matching the claim's phrasing and qualifier.",
+            "relevance_explanation": "The claim proposes that rack shielding is attenuating the signal, which directly addresses weak RSSI (observed -81.0 vs threshold -75.0) in MRW-TAG-0031 by offering a mechanism for reduced radio signal strength."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "real_quote_unrelated_cause",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-02",
+              "text": "Rack shielding likely attenuates the signal from MRW-TAG-0031.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-02",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "An AP power outage caused the tag's reporting gap.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "Rack shielding likely attenuates the signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note says nothing about a power outage. The authentic quote does not support the proposed cause.",
+            "relevance_explanation": "The proposed claim explicitly concerns the reporting gap, but that relevance cannot supply the missing source support."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note says \"Rack shielding likely attenuates the signal from MRW-TAG-0031,\" which is a shielding/attenuation explanation, not an AP power outage. The note provides no evidence that a power outage caused the tag's reporting gap.",
+            "relevance_explanation": "The claim proposes that an AP power outage caused the tag's reporting gap, which directly addresses REPORT_GAP\u2014the violation at issue\u2014by explaining why the tag's report interval reached 300.0 against a 15.0 threshold. This is a relevance judgment only; whether the outage actually occurred is not assessed here."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "uncertainty_overstated",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-03",
+              "text": "Rack shielding may be causing MRW-TAG-0031's weak signal; this has not been confirmed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-03",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding is the confirmed cause of the weak signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "Rack shielding may be causing MRW-TAG-0031's weak signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The claim asserts confirmation that the note explicitly denies. Assess the claim as written rather than silently weakening it.",
+            "relevance_explanation": "Both the claim and violation concern weak signal strength."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note says rack shielding \"may be causing\" the weak signal and explicitly states \"this has not been confirmed,\" which directly contradicts the claim that it is the confirmed cause.",
+            "relevance_explanation": "The claim proposes rack shielding as the confirmed cause of the weak signal, which directly addresses the WEAK_RSSI violation (observed -81.0 vs threshold -75.0). This is a proposed physical mechanism for reduced received signal strength, so it pertains to the violation regardless of whether the shielding explanation is actually proven."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "negation_outside_quote",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-04",
+              "text": "For MRW-TAG-0031, we ruled out the hypothesis that rack shielding caused the weak signal. The cause remains unknown.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-04",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding caused the weak signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "rack shielding caused the weak signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The quote is an exact substring, but the full sentence rules out the proposed explanation.",
+            "relevance_explanation": "The rejected hypothesis concerns the same weak-signal issue; relevance does not override negation."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note states the hypothesis that rack shielding caused the weak signal was ruled out, directly contradicting the claim that rack shielding caused it.",
+            "relevance_explanation": "The stated cause is that rack shielding produced the weak signal. This proposes a physical mechanism (shielding attenuation) that directly explains the WEAK_RSSI violation, in which the observed RSSI of -81.0 fell below the -75.0 threshold. The claim is therefore about the same signal-strength issue as the violation, regardless of whether the shielding explanation is actually supported."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "supported_but_irrelevant",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-05",
+              "text": "For the equipment carrying MRW-TAG-0031, a loose caster caused the cart to wobble. This is a mechanical observation only; no radio issue was investigated.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-05",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "A loose caster caused the cart to wobble.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "a loose caster caused the cart to wobble."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly attributes the cart wobble to a loose caster.",
+            "relevance_explanation": "The claim explains a mechanical issue, not weak signal. Do not invent a link between them."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly states that \"a loose caster caused the cart to wobble,\" directly matching the claim.",
+            "relevance_explanation": "The claim proposes a loose caster causing the cart to wobble, a mechanical/physical movement explanation. The violation is WEAK_RSSI (observed -81.0 vs threshold -75.0), a radio signal strength issue. Cart wobble has no identified relationship to the weak signal violation, so the claim is irrelevant."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "ambiguous_explanation",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-06",
+              "text": "Discussion for MRW-TAG-0031 covered equipment movement and battery replacement, plus missed reports and a cart problem. Technician: 'That may explain the problem.' No further detail recorded.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-06",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Equipment movement may explain the problem.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "That may explain the problem."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "uncertain",
+            "violation_relevance": "uncertain",
+            "support_explanation": "The referent of 'That' is ambiguous between the discussed items, so support for equipment movement is unclear.",
+            "relevance_explanation": "The unspecified problem could mean missed reports or the cart problem. The note does not resolve that ambiguity."
+          },
+          "actual": {
+            "claim_support": "uncertain",
+            "violation_relevance": "uncertain",
+            "support_explanation": "The note lists \"equipment movement and battery replacement, plus missed reports and a cart problem,\" then records the technician saying \"That may explain the problem.\" Because the referent of \"That\" is ambiguous among several topics, the note does not establish that the technician's statement specifically refers to equipment movement.",
+            "relevance_explanation": "The claim proposes that \"equipment movement\" may explain \"the problem,\" but it does not specify which problem or how equipment movement connects to the REPORT_GAP violation (an observed reporting interval of 300.0 against a 15.0 threshold in SurgSuite-1). Without identifying the problem being explained, the claim's connection to this reporting gap is ambiguous."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        }
+      ]
+    },
+    {
+      "source_file": "3_original.json",
+      "source_sha256": "bf579831acf24fce400129070218296399501d0836a0d7dcf366186dbe3135a9",
+      "model": "deepseek-v4-flash",
+      "created_at": "2026-10-12T19:46:26.106082+00:00",
+      "cases_sha256": "cbf9e1a0059e8b7703600dd89eaa4b84f8f72ed463d22c4a2da652e4cac55b38",
+      "assessment_mode": "separate_support_and_relevance",
+      "prompt_schema_sha256": "618d0fda4c7d0cd2d995156cf796d0541a74671655a8ebc9982a8f74d358b932",
+      "stage_tool_choices": {
+        "support": {
+          "type": "tool",
+          "name": "assess_support"
+        },
+        "relevance": {
+          "type": "tool",
+          "name": "assess_relevance"
+        }
+      },
+      "request_options": {
+        "max_tokens": 1024,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "request_options_sha256": "fb7e4d671074b787b6beb586f31810ed5e78072d455fb7453c4c166b4c9de0a5",
+      "summary": {
+        "total": 6,
+        "completed": 6,
+        "errors": 0,
+        "matched": 6,
+        "mismatched": 0,
+        "completion_rate": 1.0,
+        "both_labels_agreement": 1.0,
+        "claim_support_agreement": 1.0,
+        "violation_relevance_agreement": 1.0,
+        "explanations_pending_review": 6
+      },
+      "limitations": "Agreement uses all cases as the denominator, including errors. Six authored examples are not broad accuracy evidence. Explanations require human review for unsupported assertions and lost uncertainty; label matches alone do not establish semantic correctness.",
+      "results": [
+        {
+          "case_id": "supported_explanation",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-01",
+              "text": "For MRW-TAG-0031, rack shielding is likely attenuating the signal.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-01",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding is likely attenuating the signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "rack shielding is likely attenuating the signal."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The claim preserves the note's explicit explanation and its 'likely' qualification.",
+            "relevance_explanation": "Signal attenuation directly concerns the weak-signal violation; this is still a technician's hypothesis."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note states verbatim that \"rack shielding is likely attenuating the signal,\" which directly backs the claim as phrased.",
+            "relevance_explanation": "The claim proposes that rack shielding is attenuating the signal, which directly addresses the WEAK_RSSI violation (observed -81.0 vs threshold -75.0) by offering a physical mechanism\u2014shielding attenuation\u2014for the low received signal strength. This is a proposed explanation for the weak RSSI, not a finding that it actually occurred."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "real_quote_unrelated_cause",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-02",
+              "text": "Rack shielding likely attenuates the signal from MRW-TAG-0031.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-02",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "An AP power outage caused the tag's reporting gap.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "Rack shielding likely attenuates the signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note says nothing about a power outage. The authentic quote does not support the proposed cause.",
+            "relevance_explanation": "The proposed claim explicitly concerns the reporting gap, but that relevance cannot supply the missing source support."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note attributes the issue to rack shielding attenuating MRW-TAG-0031's signal; it never mentions an AP power outage, so it does not support that stated cause.",
+            "relevance_explanation": "The stated cause is an AP power outage producing the tag's reporting gap. A reporting gap is precisely the REPORT_GAP violation (300 s observed vs. 15 s threshold), so the proposed mechanism directly addresses the violation, regardless of whether the outage is actually supported."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "uncertainty_overstated",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-03",
+              "text": "Rack shielding may be causing MRW-TAG-0031's weak signal; this has not been confirmed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-03",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding is the confirmed cause of the weak signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "Rack shielding may be causing MRW-TAG-0031's weak signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The claim asserts confirmation that the note explicitly denies. Assess the claim as written rather than silently weakening it.",
+            "relevance_explanation": "Both the claim and violation concern weak signal strength."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note states rack shielding \"may be causing\" the weak signal and explicitly says \"this has not been confirmed,\" which directly contradicts the claim that rack shielding is the confirmed cause.",
+            "relevance_explanation": "The claim attributes the weak signal to rack shielding, which directly addresses the WEAK_RSSI violation (observed -81.0 versus threshold -75.0). This is judged as a causal mechanism connected to the violation; the assessment does not endorse the claim as true."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "negation_outside_quote",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-04",
+              "text": "For MRW-TAG-0031, we ruled out the hypothesis that rack shielding caused the weak signal. The cause remains unknown.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-04",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Rack shielding caused the weak signal.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "rack shielding caused the weak signal"
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The quote is an exact substring, but the full sentence rules out the proposed explanation.",
+            "relevance_explanation": "The rejected hypothesis concerns the same weak-signal issue; relevance does not override negation."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note explicitly says the hypothesis that rack shielding caused the weak signal was ruled out for MRW-TAG-0031, contradicting the stated cause.",
+            "relevance_explanation": "The claim proposes that rack shielding caused the weak signal, which directly addresses the WEAK_RSSI violation (observed -81.0 against a -75.0 threshold) by explaining why the RSSI fell below threshold. This bears on the violation regardless of whether the shielding explanation is actually supported."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "supported_but_irrelevant",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-05",
+              "text": "For the equipment carrying MRW-TAG-0031, a loose caster caused the cart to wobble. This is a mechanical observation only; no radio issue was investigated.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-05",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "A loose caster caused the cart to wobble.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "a loose caster caused the cart to wobble."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly attributes the cart wobble to a loose caster.",
+            "relevance_explanation": "The claim explains a mechanical issue, not weak signal. Do not invent a link between them."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note states verbatim that \"a loose caster caused the cart to wobble,\" directly backing the claim as phrased.",
+            "relevance_explanation": "The stated cause is a loose caster causing the cart to wobble, a mechanical/physical-motion issue. The violation is WEAK_RSSI, an RF signal strength shortfall, which has no identified relationship to cart wobble; no mechanism connecting the two is proposed or implied."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "ambiguous_explanation",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "ASSESS-06",
+              "text": "Discussion for MRW-TAG-0031 covered equipment movement and battery replacement, plus missed reports and a cart problem. Technician: 'That may explain the problem.' No further detail recorded.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "ASSESS-06",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Equipment movement may explain the problem.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "That may explain the problem."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "uncertain",
+            "violation_relevance": "uncertain",
+            "support_explanation": "The referent of 'That' is ambiguous between the discussed items, so support for equipment movement is unclear.",
+            "relevance_explanation": "The unspecified problem could mean missed reports or the cart problem. The note does not resolve that ambiguity."
+          },
+          "actual": {
+            "claim_support": "uncertain",
+            "violation_relevance": "uncertain",
+            "support_explanation": "The note lists several topics (equipment movement, battery replacement, missed reports, a cart problem) and only records the technician's bare \"That may explain the problem.\" The referent of \"That\" is unresolved among these topics, so the note does not establish that equipment movement is what may explain the problem.",
+            "relevance_explanation": "The stated cause\u2014\"equipment movement may explain the problem\"\u2014does not identify which problem it refers to, so its connection to the REPORT_GAP (300.0 versus 15.0 threshold) remains ambiguous. It cannot be determined whether the proposed equipment-movement mechanism is offered to explain the reporting gap or some other issue."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        }
+      ]
+    },
+    {
+      "source_file": "4_fresh.json",
+      "source_sha256": "c664034b4dcf5b8fc92b09ba7fab7d98d240928c52faa73edec47f7a2787c662",
+      "model": "deepseek-v4-flash",
+      "created_at": "2026-10-12T19:46:33.575355+00:00",
+      "cases_sha256": "ee200c1fd97a08504c85c7c16d9dbc6d4a3e27fcf312d2c085b99cd046a3db68",
+      "assessment_mode": "separate_support_and_relevance",
+      "prompt_schema_sha256": "618d0fda4c7d0cd2d995156cf796d0541a74671655a8ebc9982a8f74d358b932",
+      "stage_tool_choices": {
+        "support": {
+          "type": "tool",
+          "name": "assess_support"
+        },
+        "relevance": {
+          "type": "tool",
+          "name": "assess_relevance"
+        }
+      },
+      "request_options": {
+        "max_tokens": 1024,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "request_options_sha256": "fb7e4d671074b787b6beb586f31810ed5e78072d455fb7453c4c166b4c9de0a5",
+      "summary": {
+        "total": 3,
+        "completed": 3,
+        "errors": 0,
+        "matched": 3,
+        "mismatched": 0,
+        "completion_rate": 1.0,
+        "both_labels_agreement": 1.0,
+        "claim_support_agreement": 1.0,
+        "violation_relevance_agreement": 1.0,
+        "explanations_pending_review": 3
+      },
+      "limitations": "Agreement uses all cases as the denominator, including errors. Six authored examples are not broad accuracy evidence. Explanations require human review for unsupported assertions and lost uncertainty; label matches alone do not establish semantic correctness.",
+      "results": [
+        {
+          "case_id": "supported_label_damage_irrelevant_to_gap",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-01",
+              "text": "On MRW-TAG-0031, cleaning solvent dissolved the printed asset label. This observation concerns printed text only; radio operation was not assessed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-01",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Cleaning solvent dissolved the printed asset label.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "cleaning solvent dissolved the printed asset label."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly attributes the loss of printed text to cleaning solvent, matching the claim.",
+            "relevance_explanation": "The claim explains printed-label damage, not missing telemetry. Sharing the affected tag does not establish relevance."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note states verbatim that on MRW-TAG-0031, cleaning solvent dissolved the printed asset label, matching the claim exactly (with the same tag context).",
+            "relevance_explanation": "The claim proposes that cleaning solvent dissolved a printed asset label, a mechanism that could at most explain a missing or unreadable label. The violation is REPORT_GAP, an excessive gap of 300.0 against a 15.0 threshold. The claim does not identify any reporting, logging, or transmission mechanism and has no identified relationship to the reporting gap."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "unsupported_maintenance_claim_remains_target",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-02",
+              "text": "The assigned-zone entry for MRW-TAG-0031 is outdated, explaining the zone mismatch. No AP maintenance was recorded.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-02",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "An AP maintenance shutdown caused the reporting gap.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "The assigned-zone entry for MRW-TAG-0031 is outdated, explaining the zone mismatch."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note provides a zone-assignment explanation and no evidence of the claimed AP shutdown.",
+            "relevance_explanation": "The unchanged AP-maintenance claim explicitly explains a reporting gap. Assess its relevance without substituting the note's zone-assignment explanation."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note states \"No AP maintenance was recorded,\" which contradicts the claimed cause of an AP maintenance shutdown. The note's actual explanation concerns an outdated assigned-zone entry, unrelated to the reporting gap claim.",
+            "relevance_explanation": "The claim proposes that an AP maintenance shutdown caused the reporting gap, which directly addresses the REPORT_GAP violation by offering a mechanism (AP outage) for the missing or delayed reports. Whether the shutdown actually occurred is a separate source-support question."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "irrelevant_claim_not_rescued_by_relevant_note",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-03",
+              "text": "For MRW-TAG-0031, a metal enclosure likely attenuates the signal. No damage to the printed label was observed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-03",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Cleaning solvent dissolved the printed asset label.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "a metal enclosure likely attenuates the signal."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note does not support solvent damage and reports no observed label damage.",
+            "relevance_explanation": "The proposed claim concerns printed-label damage, not weak radio signal. The relevant enclosure explanation in the note must not replace the supplied claim."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note only states that a metal enclosure likely attenuates the signal and that no damage to the printed label was observed. It contains no mention of cleaning solvent or of a printed asset label being dissolved, so it does not support the stated cause.",
+            "relevance_explanation": "The proposed mechanism is that cleaning solvent dissolved the printed asset label, a physical damage issue to the label. The violation concerns a weak RSSI (observed -81.0 against a -75.0 threshold), a radio signal strength problem, and label damage has no identified relationship to weak signal strength."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        }
+      ]
+    },
+    {
+      "source_file": "5_fresh.json",
+      "source_sha256": "1d56e56da66bb15d019229e12f7d6abe356183b4372f72a286cbb4686d33fe22",
+      "model": "deepseek-v4-flash",
+      "created_at": "2026-10-12T19:46:40.333319+00:00",
+      "cases_sha256": "ee200c1fd97a08504c85c7c16d9dbc6d4a3e27fcf312d2c085b99cd046a3db68",
+      "assessment_mode": "separate_support_and_relevance",
+      "prompt_schema_sha256": "618d0fda4c7d0cd2d995156cf796d0541a74671655a8ebc9982a8f74d358b932",
+      "stage_tool_choices": {
+        "support": {
+          "type": "tool",
+          "name": "assess_support"
+        },
+        "relevance": {
+          "type": "tool",
+          "name": "assess_relevance"
+        }
+      },
+      "request_options": {
+        "max_tokens": 1024,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "request_options_sha256": "fb7e4d671074b787b6beb586f31810ed5e78072d455fb7453c4c166b4c9de0a5",
+      "summary": {
+        "total": 3,
+        "completed": 3,
+        "errors": 0,
+        "matched": 3,
+        "mismatched": 0,
+        "completion_rate": 1.0,
+        "both_labels_agreement": 1.0,
+        "claim_support_agreement": 1.0,
+        "violation_relevance_agreement": 1.0,
+        "explanations_pending_review": 3
+      },
+      "limitations": "Agreement uses all cases as the denominator, including errors. Six authored examples are not broad accuracy evidence. Explanations require human review for unsupported assertions and lost uncertainty; label matches alone do not establish semantic correctness.",
+      "results": [
+        {
+          "case_id": "supported_label_damage_irrelevant_to_gap",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-01",
+              "text": "On MRW-TAG-0031, cleaning solvent dissolved the printed asset label. This observation concerns printed text only; radio operation was not assessed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-01",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Cleaning solvent dissolved the printed asset label.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "cleaning solvent dissolved the printed asset label."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly attributes the loss of printed text to cleaning solvent, matching the claim.",
+            "relevance_explanation": "The claim explains printed-label damage, not missing telemetry. Sharing the affected tag does not establish relevance."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note states verbatim that on MRW-TAG-0031 cleaning solvent dissolved the printed asset label, matching the claim as phrased; the scope caveat about radio operation does not affect this stated cause.",
+            "relevance_explanation": "The proposed mechanism is that a cleaning solvent dissolved the printed asset label, an explanation about physical label integrity. That concerns label damage, not the REPORT_GAP violation (observed 300.0 against a 15.0 threshold), and no relationship between label dissolution and the reporting gap is identified."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "unsupported_maintenance_claim_remains_target",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-02",
+              "text": "The assigned-zone entry for MRW-TAG-0031 is outdated, explaining the zone mismatch. No AP maintenance was recorded.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-02",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "An AP maintenance shutdown caused the reporting gap.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "The assigned-zone entry for MRW-TAG-0031 is outdated, explaining the zone mismatch."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note provides a zone-assignment explanation and no evidence of the claimed AP shutdown.",
+            "relevance_explanation": "The unchanged AP-maintenance claim explicitly explains a reporting gap. Assess its relevance without substituting the note's zone-assignment explanation."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note explicitly states \"No AP maintenance was recorded,\" which contradicts the claim that an AP maintenance shutdown caused the reporting gap. The note instead attributes the zone mismatch to an outdated assigned-zone entry.",
+            "relevance_explanation": "The claim proposes that an AP maintenance shutdown caused the reporting gap, which directly addresses the REPORT_GAP violation by offering a mechanism (loss of wireless access point connectivity during maintenance) for the missing reports."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "irrelevant_claim_not_rescued_by_relevant_note",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-03",
+              "text": "For MRW-TAG-0031, a metal enclosure likely attenuates the signal. No damage to the printed label was observed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-03",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Cleaning solvent dissolved the printed asset label.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "a metal enclosure likely attenuates the signal."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note does not support solvent damage and reports no observed label damage.",
+            "relevance_explanation": "The proposed claim concerns printed-label damage, not weak radio signal. The relevant enclosure explanation in the note must not replace the supplied claim."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note states a metal enclosure likely attenuates the signal and that no damage to the printed label was observed. It contains no evidence that cleaning solvent dissolved the printed asset label; the stated cause is unsupported and the note's observation of no label damage conflicts with it.",
+            "relevance_explanation": "The stated cause is that cleaning solvent dissolved the printed asset label, a physical label-damage mechanism with no identified relationship to the WEAK_RSSI violation (observed -81.0 vs threshold -75.0), which concerns radio signal strength received from the tag."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        }
+      ]
+    },
+    {
+      "source_file": "6_fresh.json",
+      "source_sha256": "23167b7dd6a42cfc6aebf7f0d7403faca0bf7f0b60a00f6be8dc6de0268dc914",
+      "model": "deepseek-v4-flash",
+      "created_at": "2026-10-12T19:46:47.616047+00:00",
+      "cases_sha256": "ee200c1fd97a08504c85c7c16d9dbc6d4a3e27fcf312d2c085b99cd046a3db68",
+      "assessment_mode": "separate_support_and_relevance",
+      "prompt_schema_sha256": "618d0fda4c7d0cd2d995156cf796d0541a74671655a8ebc9982a8f74d358b932",
+      "stage_tool_choices": {
+        "support": {
+          "type": "tool",
+          "name": "assess_support"
+        },
+        "relevance": {
+          "type": "tool",
+          "name": "assess_relevance"
+        }
+      },
+      "request_options": {
+        "max_tokens": 1024,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "request_options_sha256": "fb7e4d671074b787b6beb586f31810ed5e78072d455fb7453c4c166b4c9de0a5",
+      "summary": {
+        "total": 3,
+        "completed": 3,
+        "errors": 0,
+        "matched": 3,
+        "mismatched": 0,
+        "completion_rate": 1.0,
+        "both_labels_agreement": 1.0,
+        "claim_support_agreement": 1.0,
+        "violation_relevance_agreement": 1.0,
+        "explanations_pending_review": 3
+      },
+      "limitations": "Agreement uses all cases as the denominator, including errors. Six authored examples are not broad accuracy evidence. Explanations require human review for unsupported assertions and lost uncertainty; label matches alone do not establish semantic correctness.",
+      "results": [
+        {
+          "case_id": "supported_label_damage_irrelevant_to_gap",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-01",
+              "text": "On MRW-TAG-0031, cleaning solvent dissolved the printed asset label. This observation concerns printed text only; radio operation was not assessed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-01",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Cleaning solvent dissolved the printed asset label.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "cleaning solvent dissolved the printed asset label."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly attributes the loss of printed text to cleaning solvent, matching the claim.",
+            "relevance_explanation": "The claim explains printed-label damage, not missing telemetry. Sharing the affected tag does not establish relevance."
+          },
+          "actual": {
+            "claim_support": "supported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note explicitly states that on MRW-TAG-0031, cleaning solvent dissolved the printed asset label, matching the claim's stated cause.",
+            "relevance_explanation": "The claim proposes that cleaning solvent dissolved a printed asset label, whereas the violation is a REPORT_GAP (observed 300.0 vs threshold 15.0). A dissolved printed label concerns physical damage to labeling and does not identify any mechanism relating to a reporting gap; no causal connection to missing or delayed reports is stated, so the claim is irrelevant."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "unsupported_maintenance_claim_remains_target",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-02",
+              "text": "The assigned-zone entry for MRW-TAG-0031 is outdated, explaining the zone mismatch. No AP maintenance was recorded.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-02",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "An AP maintenance shutdown caused the reporting gap.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "The assigned-zone entry for MRW-TAG-0031 is outdated, explaining the zone mismatch."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "REPORT_GAP",
+              "observed_value": 300.0,
+              "threshold": 15.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note provides a zone-assignment explanation and no evidence of the claimed AP shutdown.",
+            "relevance_explanation": "The unchanged AP-maintenance claim explicitly explains a reporting gap. Assess its relevance without substituting the note's zone-assignment explanation."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "relevant",
+            "support_explanation": "The note explicitly states \"No AP maintenance was recorded,\" which contradicts the claim that an AP maintenance shutdown caused the reporting gap, and offers a different explanation (outdated assigned-zone entry).",
+            "relevance_explanation": "The claim proposes that an AP maintenance shutdown caused the reporting gap, which directly concerns the REPORT_GAP violation (a 300s gap against a 15s threshold). Whether the shutdown actually occurred or is supported is a separate question, but the proposed mechanism addresses the violation itself."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        },
+        {
+          "case_id": "irrelevant_claim_not_rescued_by_relevant_note",
+          "input": {
+            "site_id": "SITE-MAPLEWOOD",
+            "note": {
+              "note_id": "TRANSFER-03",
+              "text": "For MRW-TAG-0031, a metal enclosure likely attenuates the signal. No damage to the printed label was observed.",
+              "scope": {
+                "site_id": "SITE-MAPLEWOOD",
+                "tag_ids": [
+                  "MRW-TAG-0031"
+                ],
+                "zones": []
+              }
+            },
+            "facts": {
+              "note_id": "TRANSFER-03",
+              "referenced_tags": [
+                "MRW-TAG-0031"
+              ],
+              "referenced_zones": [],
+              "stated_cause": "Cleaning solvent dissolved the printed asset label.",
+              "ticket_refs": [],
+              "suggested_action": null,
+              "unresolvable": false,
+              "cause_quote": "a metal enclosure likely attenuates the signal."
+            },
+            "violation": {
+              "tag_id": "MRW-TAG-0031",
+              "zone": "SurgSuite-1",
+              "zone_type": "critical_care",
+              "violation_type": "WEAK_RSSI",
+              "observed_value": -81.0,
+              "threshold": -75.0
+            }
+          },
+          "expected": {
+            "claim_support": "unsupported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note does not support solvent damage and reports no observed label damage.",
+            "relevance_explanation": "The proposed claim concerns printed-label damage, not weak radio signal. The relevant enclosure explanation in the note must not replace the supplied claim."
+          },
+          "actual": {
+            "claim_support": "unsupported",
+            "violation_relevance": "irrelevant",
+            "support_explanation": "The note only states that a metal enclosure likely attenuates the signal and that no damage to the printed label was observed. It contains no evidence about cleaning solvent dissolving the asset label.",
+            "relevance_explanation": "The stated cause is that cleaning solvent dissolved the printed asset label, a label-degradation mechanism. The violation is WEAK_RSSI (observed -81.0 against a -75.0 threshold), which concerns radio signal strength; a dissolved printed label has no identified relationship to weak RSSI, so the claim does not pertain to this violation."
+          },
+          "explanation_review": "pending",
+          "status": "match",
+          "label_matches": {
+            "claim_support": true,
+            "violation_relevance": true
+          }
+        }
+      ]
+    }
+  ]
+}
