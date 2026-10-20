@@ -1,102 +1,154 @@
 ---
 title: "A Citation Isn't Proof: Building Evidence Checks into AI Workflows"
 date: 2026-10-20
+lastmod: 2026-10-20
 draft: false
 tags: ["AI", "Agents", "Evaluation", "RTLS"]
-summary: "A valid citation can still support a bad conclusion. Lessons from building an RTLS assessment workflow: separate source checks, claim support, and relevance, then evaluate the explanations as well as the labels."
-description: "How to separate source validation, claim support, and relevance in AI workflows, illustrated with a synthetic RTLS assessment and saved evaluation results."
+summary: "All 27 assessments matched the expected labels, but some explanations were still wrong. Code and examples show what source checks, claim support, and relevance can actually establish."
+description: "Practical code examples for validating evidence in AI workflows, using synthetic RTLS cases and saved model responses to separate source integrity, claim support, and relevance."
 ---
 
-Two equipment tags each have a five-hour interval without recorded updates. A technician's note says staff move equipment into a utility room with poor wireless coverage. It is easy to connect those observations: the equipment went into the room, lost coverage, and stopped reporting.
+One evaluation batch for my Deployment Readiness Agent returned the expected labels in all **27 assessments**. Some of its explanations were still wrong.
 
-That explanation has a source. It also contains a step the source never established: that these particular tags were in that room during those intervals.
+A model correctly rejected an unsupported claim, then gave an unsupported reason for rejecting it. Another response described minutes as seconds. A score based only on the labels missed both problems.
 
-This is the problem I have been working through in the second version of my [Deployment Readiness Agent](/projects/deployment-readiness-agent/). The project uses real-time location system (RTLS) measurements and technician notes to prepare a site assessment. All examples here use fictional facilities, synthetic telemetry, and synthetic notes. They demonstrate the workflow's behavior, not results from a hospital deployment.
+That exposed a limitation in how I was checking the workflow: I could verify that a response had the expected structure and classifications without verifying the claims in its explanation.
 
-The broader question is useful for anyone building agents that interpret records: **what does each validation check actually establish about the answer?**
+The examples below come from the second version of my [Deployment Readiness Agent](/projects/deployment-readiness-agent/), which combines real-time location system (RTLS) measurements and technician notes into an assessment for review. The facilities, equipment tags, measurements, and notes are synthetic. The model responses are saved evaluation outputs from those synthetic cases.
 
-## Four questions behind a cited claim
+## A correct label can have an incorrect explanation
 
-A schema can require a claim, a source ID, and a quotation. Those fields make the result easier to process and inspect. Their presence does not establish that the claim follows from the source.
+One case proposed this claim:
 
-I found it useful to separate four questions:
+> An AP maintenance shutdown caused the reporting gap.
 
-1. **Structure:** Does the response have the required fields and allowed values?
-2. **Source integrity and scope:** Does the note exist, does the quotation occur in it, and does its declared site, tag, or zone scope apply?
-3. **Claim support:** Does the full note support the proposed claim as written, including its level of certainty?
-4. **Relevance:** Does that same claim concern the measured problem being assessed?
+Here, AP means wireless access point. The cited note discussed an outdated zone assignment and ended with:
 
-The first two lend themselves to code. The last two require interpreting meaning. In this project, an LLM makes those judgments, so they remain subject to evaluation and review.
+> No AP maintenance was recorded.
 
-One evaluation case makes the limit of quotation matching clear. The note says:
+The model returned these labels, shown exactly as saved:
 
-> For MRW-TAG-0031, we ruled out the hypothesis that rack shielding caused the weak signal. The cause remains unknown.
+```json
+{
+  "claim_support": "unsupported",
+  "violation_relevance": "relevant"
+}
+```
 
-The phrase “rack shielding caused the weak signal” is an exact substring. Extracted on its own, it supports the opposite impression from the full sentence. A string comparison can confirm the quotation exists. The support assessment has to account for “ruled out.”
+Both matched the authored expectations. The note did not establish a maintenance shutdown, while the proposed shutdown concerned the missing updates being investigated.
 
-## Support and relevance are different judgments
+But the first sentence of the model's support explanation said:
 
-Suppose the proposed claim is that an access-point power outage caused a reporting gap. That claim is relevant to missing updates. If its cited note only discusses shielding near the tag, the note does not support the outage claim.
+> The note states "No AP maintenance was recorded," which contradicts the claimed cause of an AP maintenance shutdown.
 
-The reverse is possible too. A note may explicitly say a loose caster caused a cart to wobble. The claim is supported by the note, but it provides no identified explanation for weak radio reception. Sharing an equipment tag does not make every observation about that equipment relevant to every problem.
+Missing documentation does not establish that maintenance did not happen. The claim lacked supporting evidence; the note did not contradict it. That distinction matters when someone uses the assessment to decide what to investigate next.
 
-In the current implementation, I assess these questions in separate model requests:
+The [saved evaluation evidence](/files/agent-evidence-checks/evaluation-evidence.json) contains all six runs: nine authored cases repeated three times, producing 27 matching label pairs with no request errors. This is a small historical evaluation, not a general accuracy benchmark or a measurement of the latest prompts.
 
-- The **support request** receives the unchanged claim, its quotation, and the full source note.
-- The **relevance request** receives the unchanged claim and the measured violation, including units.
+## A valid source reference leaves several questions open
 
-Neither receives the other's answer or conversation history. This limits the context each judgment can use. It also makes failures easier to inspect: did the model misread the note, or misjudge the relationship to the measurement?
+I separate validation into four questions:
 
-The separation costs another model call. It also leaves both stages capable of error. Its value is a clearer responsibility for each stage and a more precise way to evaluate the results.
+1. **Structure:** Does the response contain the required fields and allowed values?
+2. **Source integrity and scope:** Does the note exist, does the quotation appear in it, and does its declared site, tag, or zone scope apply?
+3. **Claim support:** Does the full note support the unchanged claim, including its certainty and qualifications?
+4. **Relevance:** Does that claim concern the measured problem?
 
-## Design the workflow around those responsibilities
+The first two are mechanical checks in this project. The last two are model judgments, which can be wrong even when their outputs pass schema validation.
 
-[Anthropic's description of workflows and agents](https://www.anthropic.com/engineering/building-effective-agents) distinguishes predefined execution paths from systems where a model directs its own process and tool use. Under that distinction, this version of my project is a constrained workflow. Python determines the stages; the model performs specific language tasks within them.
+An exact quotation is a useful example. This runnable Python snippet uses text from an evaluation case:
 
-Python loads the measurements, calculates per-tag statistics, and compares them with configured thresholds. It also checks source IDs, declared scope, and exact quotations. The model extracts information from freeform notes and assesses eligible claims. Saved results retain the inputs, judgments, unresolved notes, and rejected candidates.
+```python
+note = (
+    "For MRW-TAG-0031, we ruled out the hypothesis that "
+    "rack shielding caused the weak signal. "
+    "The cause remains unknown."
+)
+quote = "rack shielding caused the weak signal"
 
-These boundaries matter because an agent's intermediate output can become the next stage's input. If an extracted possibility becomes a confirmed fact, later stages may carry that stronger claim forward. Keeping the original note beside the extracted claim makes that change inspectable.
+assert quote in note  # Passes: the quoted text exists.
+```
 
-The retry policy follows the same distinction. Malformed assessment output gets one retry. A valid “unsupported” or “uncertain” judgment is retained. Asking again until a positive answer appears would change what the workflow is measuring.
+The check works as intended. It establishes that the quotation is present. It does not account for the words "ruled out," which reverse the meaning of the extracted phrase. The support assessment must read the full note.
 
-## A perfect label score can hide a bad explanation
+Even a correctly supported claim has another limit: **faithfulness to a source does not establish that the source is true.** A technician can be mistaken. This workflow assesses whether a claim follows from a note; it does not independently confirm the event described.
 
-One saved evaluation batch ran nine authored cases three times each. All **27 assessments matched both expected labels**: claim support and relevance. There were no request errors.
+## Separate the questions and their inputs
 
-The explanations still contained mistakes.
+Support and relevance can disagree. A claim that an access-point outage caused missing updates is relevant to a reporting gap, even when its cited note provides no evidence of an outage. Conversely, a note can support a claim that a loose caster made a cart wobble without identifying any connection to weak radio reception.
 
-In a maintenance case, the note said “No AP maintenance was recorded.” The proposed claim was that a maintenance shutdown caused the reporting gap. The model correctly labeled the claim unsupported, but explained that the absence of a maintenance record contradicted the claim.
+I give those judgments separate model requests. These are the two payloads from `assess_cause`, shown with local variable names for readability; transport, response validation, and retry handling are omitted:
 
-Those are different statements. Missing documentation leaves the event unestablished. It does not establish that the event did not happen.
+```python
+support_payload = {
+    "stated_cause": facts.stated_cause,
+    "cause_quote": facts.cause_quote,
+    "note": source.model_dump(mode="json"),
+}
 
-Another explanation in that batch described a 300-minute gap against a 15-minute limit as “a 300s gap against a 15s threshold.” The labels were still correct. The explanation changed the units.
+relevance_payload = {
+    "stated_cause": facts.stated_cause,
+    "violation": violation_with_units(violation),
+}
+```
 
-This is why I now distinguish several kinds of checks. Code tests verify mechanics such as request contents, validation, and error handling. Semantic evaluations compare model judgments with authored expectations. Explanation review checks whether the text preserves the source's meaning and the measurement's units.
+Both receive the same unchanged claim. Support receives the full note. Relevance receives the measured violation. Neither request receives the other's judgment or conversation history. The source note may itself mention measurements; it is preserved intact.
 
-Following those findings, I added explicit units to relevance inputs and a required support reason, such as missing evidence, contradiction, or overstated certainty. The schema enforces valid label/reason combinations. The model still has to choose the right reason, and the explanation still needs review.
+This separation gives each request a narrower task and makes errors easier to inspect. It adds a model call, and both judgments remain fallible. Two calls do not constitute independent confirmation of the event.
 
-These results come from a small synthetic case set with repeated runs, not 27 independent deployment scenarios. They do not establish general accuracy. They do show a specific failure of the earlier scoring approach: label agreement alone missed errors that mattered to the reader.
+The workflow also preserves valid negative and uncertain judgments. Malformed assessment output gets one retry; an answer of "unsupported" does not trigger repeated attempts to obtain a positive answer.
 
-The [saved evaluation evidence](/files/agent-evidence-checks/evaluation-evidence.json) includes the six run summaries, all 27 case results, and the source metadata for that batch.
+## Supply the facts the model needs
 
-## Give missing evidence a useful outcome
+The units error exposed an input-design problem on my side. The earlier payload supplied an observed value of `300` and a threshold of `15`, but no explicit unit field. The underlying metric was measured in minutes. One saved explanation called it "a 300s gap against a 15s threshold."
 
-Return to the utility-room example. In the synthetic NursingUnit-B assessment, two tags each had a longest interval without recorded updates of five hours, against a configured limit of 15 minutes. Another tag was received by a median of one access point, against the configured requirement of three. These limits belong to this proof of concept.
+The model supplied an unsupported interpretation where the input contract left information implicit.
 
-The technician note describes equipment movement into a room with poor access-point coverage. Its declared scope is NursingUnit-B. That makes it eligible context for the zone, but the note names none of the affected tags and does not place them in the room during their measured failures.
+The current `violation_with_units` helper attaches metric and unit metadata before the relevance request. For a reporting gap, the relevant fields look like this; identifiers are omitted here:
 
-A claim that accurately repeats that observation can be supported by the note and relevant to the investigation. The missing connection to the individual tags remains missing.
+```json
+{
+  "violation_type": "REPORT_GAP",
+  "observed_value": 300.0,
+  "threshold": 15.0,
+  "measurement": {
+    "metric": "max_gap_minutes",
+    "unit": "minutes"
+  }
+}
+```
 
-The assessment can still provide a useful next step: identify each missing-update interval, compare it with documented equipment movement, measure reception in the utility room, and retest against the configured limits after any verified corrective action.
+The unit applies to both values. This supplies the context needed to interpret them, though it cannot guarantee that the model will use it correctly.
 
-The current workflow preserves candidate assessments without selecting a final cause. It also does not resolve conflicting notes. That keeps the distinction between an investigative lead and a confirmed explanation visible to the engineer.
+Following the maintenance example, I also added a required support reason: missing evidence, contradiction, overstated certainty, explicit support, or an ambiguous reference. Code rejects incompatible label/reason combinations. A combination can still be structurally valid and semantically wrong.
 
-## Keep the evidence boundary visible in the report
+That is why evaluation needs more than one check. Code tests verify mechanics. Semantic cases compare judgments and reasons with authored expectations. Review of the reported explanations checks source meaning, uncertainty, and units. A matching label does not excuse an invented statement elsewhere in the response.
 
-These distinctions need to survive the final presentation. A stakeholder should be able to tell what was measured, what a technician reported, and what still needs investigation.
+## Preserve the missing connection in the final output
 
-In the revised zone section, “max gap: 300” becomes “five hours without recorded updates.” The engine's confidence score stays in supporting measurements, with an explicit explanation that it is not measured physical location accuracy. The main narrative describes the issue and the follow-up it warrants.
+The same boundary matters when presenting findings. In the fictional NursingUnit-B assessment, two wireless equipment tags each had a five-hour interval without recorded updates, against a configured 15-minute limit. A technician note described staff moving equipment into a utility room with poor access-point coverage.
 
-The [two-page NursingUnit-B assessment](/files/agent-evidence-checks/nursing-unit-b-assessment.pdf) shows that separation. It is the first revised zone section. The PDF is rendered by deterministic code from saved review results; it is not a new model-generated diagnosis, and rendering does not independently validate model explanations.
+An illustrative inference would be that those tags entered the room, lost coverage, and stopped reporting. The note does not identify those tags or place them in the room during those intervals. Repeating the observation faithfully does not supply that missing connection.
 
-A dependable workflow needs a useful response when the evidence ends. For this project, that response is a measured finding, the relevant source context, a clear unresolved question, and a way for an engineer to investigate it. Every additional conclusion has to earn its place through evidence.
+The assessment instead separates three things:
+
+- **Measured finding:** each tag exceeded the configured limit for time without recorded updates.
+- **Technician context:** the note describes equipment movement and poor coverage in a storage room.
+- **Investigation:** compare each interval with documented equipment movement and check reception in that room.
+
+The [two-page assessment](/files/agent-evidence-checks/nursing-unit-b-assessment.pdf) demonstrates that presentation. Its measurements come from saved results. Its explanatory wording and follow-up steps are coded specifically for this zone example; they are not evidence that a model independently generated a correct investigation plan.
+
+The current workflow retains candidate assessments without selecting a final cause or resolving conflicting notes. That preserves the distinction between a useful lead and a confirmed explanation.
+
+## Make every check's responsibility explicit
+
+This version follows predefined Python stages, fitting the workflow side of [Anthropic's distinction between workflows and agents](https://www.anthropic.com/engineering/building-effective-agents). Code calculates measurements and checks exact conditions. Models interpret language within those boundaries. The same evidence problem applies when an autonomous agent passes an interpretation to its next tool call or decision.
+
+When building either kind of system, I would carry forward four practices:
+
+- Preserve the original claim and full source beside each assessment.
+- State which checks code enforces and which judgments a model proposes.
+- Evaluate explanations as well as labels, including negation, missing evidence, and units.
+- Give unresolved findings a useful next action without promoting a possible explanation to a confirmed cause.
+
+A citation makes a claim traceable. The next responsibility is to show what the source actually supports and where further evidence is needed.
